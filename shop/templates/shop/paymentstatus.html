@@ -1,0 +1,46 @@
+{% comment %} {% extends 'shop/basic.html' %}
+{% block title%} My Awesome Cart Tracker{% endblock %}
+{% block body %}
+<div class="container">
+    {{response}}
+    <div class="col my-4">
+
+        <h2>Payment status regarding your order Id {{response.ORDERID}}</h2>
+        {% if response.RESPCODE == '01' %}
+        ORDER SUCCESS
+        {% else %}
+        ORDER FAILURE
+        {% endif%}
+
+    </div>
+
+</div>
+{% endblock %}
+{% block js %}
+<script>
+</script>
+{% endblock %} {% endcomment %}
+
+{% extends 'shop/basic.html' %}
+{% block title %} My Awesome Cart Tracker {% endblock %}
+{% block body %}
+<div class="container">
+    <div class="col my-4">
+
+        <h2>Payment status regarding your order</h2>
+
+        {% if success %}
+            <h2 style="color:green;">✅ Payment Successful!</h2>
+            <p><b>Order ID:</b> {{ order_id }}</p>
+            <p><b>Payment ID:</b> {{ payment_id }}</p>
+        {% else %}
+            <h2 style="color:red;">❌ Payment Failed!</h2>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+</script>
+{% endblock %}

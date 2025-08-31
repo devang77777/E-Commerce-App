@@ -1,0 +1,1 @@
+This is my static file.This is created by me.
