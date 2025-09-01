@@ -1,54 +1,129 @@
 {% extends 'shop/basic.html' %}
 
-{% block title%} {{ product.product_name }} - My Cart{% endblock %}
-{% block body %} 
+{% block title %}{{ product.product_name }} - My Cart{% endblock %}
 
-<div class="container my-4">
-    <div class="row">
-    <div class="col-md-4">
-        <div class="row">
-            <img src="/media/{{ product.image }}" width="100%" height="100%">
+{% block body %}
+<div class="container my-5">
+  <div class="row">
+    <!-- Image Section -->
+    <div class="col-md-6 d-flex">
+      <div class="bg-white p-3 rounded shadow-sm d-flex w-100">
+        <!-- Thumbnails -->
+        <div class="me-3 d-flex flex-column align-items-center overflow-auto"
+             style="max-height:500px; min-width:90px;">
+          {% for img in product.images.all %}
+            <img src="/media/{{ img.image }}"
+                 class="img-thumbnail mb-2 p-1 thumbnail-img"
+                 alt="{{ product.product_name }}"
+                 style="width:70px; height:70px; object-fit:cover; cursor:pointer;"
+                 onclick="changeMainImage('/media/{{ img.image }}', this)">
+          {% endfor %}
         </div>
-        <button class="btn btn-primary">Buy Now</button>
-        <button class="btn btn-primary">Add To Cart </button>
+
+        <!-- Main Image -->
+        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+          <img id="mainProductImage"
+               src="/media/{{ product.images.first.image }}"
+               class="rounded shadow-sm"
+               alt="{{ product.product_name }}"
+               style="max-height:480px; max-width:100%; object-fit:contain;">
+        </div>
+      </div>
     </div>
 
-    <div class="col-md-4">
-        <h5>{{ product.product_name }}</h5>
-        <p><b>Rs. {{ product.price }}</b> </p>
-        <p>{{ product.desc}} </p>
-    </div>
-</div>
-</div>
+    <!-- Details Section -->
+    <div class="col-md-6">
+      <div class="bg-white p-4 rounded shadow-sm">
+        <h3 class="mb-2">{{ product.product_name }}</h3>
+        <div class="mb-2">
+          <span class="badge bg-warning text-dark"><i class="fa fa-star"></i> 4.2</span>
+          <span class="text-muted ms-2">10 ratings</span>
+        </div>
+        <p class="mb-3">{{ product.desc }}</p>
+        {% load humanize %}
+        <h4 class="text-success mb-3" id="unitPrice">&#8377;{{ product.price|intcomma }}</h4>
+        
 
+        <!-- Quantity Selector -->
+        <div class="mb-3">
+          <span class="fw-bold">Quantity:</span>
+          <div class="input-group" style="width:130px; display:inline-flex;">
+            <button class="btn btn-outline-secondary" id="decreaseQty" type="button">-</button>
+            <input type="text" class="form-control text-center" id="qty" value="1" readonly>
+            <button class="btn btn-outline-secondary" id="increaseQty" type="button">+</button>
+          </div>
+        </div>
+
+        <!-- Total Price -->
+        <div class="mb-4">
+          <span class="fw-bold">Total Price:</span>
+          <span class="h5 text-primary" id="totalPrice">&#8377;{{ product.price|intcomma }}</span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mb-3">
+          <button class="btn btn-warning btn-lg me-2" id="addToCart">
+            <i class="fa fa-shopping-cart"></i> Add to Cart
+          </button>
+          <button class="btn btn-success btn-lg">Buy Now</button>
+        </div>
+
+        <div>
+          <small class="text-muted">Inclusive of all taxes</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
+
 {% block js %}
+<script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
 <script>
-console.log('working');
-if(localStorage.getItem('cart') == null){
-var cart = {};
-}
-else
-{
-cart = JSON.parse(localStorage.getItem('cart'));
-document.getElementById('cart').innerHTML = Object.keys(cart).length;
-}
-$('.cart').click(function(){
-console.log('clicked');
-var idstr = this.id.toString();
-console.log(idstr);
-if (cart[idstr] !=undefined){
-cart[idstr] = cart[idstr] + 1;
-}
-else
-{
-cart[idstr] = 1;
-}
-console.log(cart);
-localStorage.setItem('cart', JSON.stringify(cart));
-document.getElementById('cart').innerHTML = Object.keys(cart).length;
+$(document).ready(function() {
+  var unitPrice = parseFloat('{{ product.price }}');
+  var qty = 1;
+
+  function updateTotal() {
+    $('#totalPrice').text('₹' + (unitPrice * qty).toLocaleString());
+    $('#qty').val(qty);
+  }
+
+  $('#increaseQty').click(function() {
+    qty += 1;
+    updateTotal();
+  });
+
+  $('#decreaseQty').click(function() {
+    if (qty > 1) {
+      qty -= 1;
+      updateTotal();
+    }
+  });
+
+  $('#addToCart').click(function() {
+    var cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+    var idstr = 'pr{{ product.id }}';
+    cart[idstr] = [qty, '{{ product.product_name }}', unitPrice];
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = Object.keys(cart).length;
+    alert('Added to cart!');
+  });
+
+  if(localStorage.getItem('cart')) {
+    document.getElementById('cart').innerHTML = Object.keys(JSON.parse(localStorage.getItem('cart'))).length;
+  }
+
+  $('#popcart').popover();
+  document.getElementById("popcart").setAttribute('data-content', '<h5>Cart for your items in my shopping cart</h5>');
 });
-$('#popcart').popover();
-document.getElementById("popcart").setAttribute('data-content', '<h5>Cart for your items in my shopping cart</h5>');
+
+function changeMainImage(src, thumbElement) {
+  document.getElementById("mainProductImage").src = src;
+  document.querySelectorAll('.thumbnail-img').forEach(img => {
+    img.classList.remove('border-primary');
+  });
+  thumbElement.classList.add('border-primary');
+}
 </script>
 {% endblock %}
