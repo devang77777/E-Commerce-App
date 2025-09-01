@@ -117,8 +117,8 @@ USE_I18N = True
 USE_TZ = True
 
 # settings.py
-RAZORPAY_KEY_ID = "rzp_test_yourKeyHere"
-RAZORPAY_KEY_SECRET = "yourSecretHere"
+RAZORPAY_KEY_ID = "rzp_test_RCJvByWdt5ePjg"
+RAZORPAY_KEY_SECRET = "VafHMSbi4ZEa8IRGZdH2nZW7"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

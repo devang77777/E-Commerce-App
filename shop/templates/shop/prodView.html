@@ -108,11 +108,15 @@ $(document).ready(function() {
     localStorage.setItem('cart', JSON.stringify(cart));
     document.getElementById('cart').innerHTML = Object.keys(cart).length;
     alert('Added to cart!');
+   
   });
 
   if(localStorage.getItem('cart')) {
     document.getElementById('cart').innerHTML = Object.keys(JSON.parse(localStorage.getItem('cart'))).length;
   }
+ $('.btn-success').click(function() {
+  window.location.href = '/shop/checkout/';
+});
 
   $('#popcart').popover();
   document.getElementById("popcart").setAttribute('data-content', '<h5>Cart for your items in my shopping cart</h5>');

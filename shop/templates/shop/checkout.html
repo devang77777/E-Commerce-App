@@ -21,7 +21,7 @@
     </div>
     <div class="col my-4">
         <h2>Step 2 - Enter Address & Other Details:</h2>
-        <form method="post" action="/shop/checkout/">{% csrf_token %}
+        <form method="post" action="/shop/pay/">{% csrf_token %}
             <input type="hidden" name="itemsJson" id="itemsJson">
             <input type="hidden" name="amount" id="amount">
             <div class="form-row">
@@ -60,7 +60,7 @@
                 <label for="inputZip">Phone Number</label>
                 <input type="tel" class="form-control" id="phone" name="phone" Required>
             </div>
-            <button type="submit" class="btn btn-primary">Place Order</button>
+            <button type="submit" class="btn btn-primary">Make Payment</button>
         </form>
     </div>
 </div>
@@ -102,5 +102,10 @@ localStorage.clear();
 document.location = "/shop";
 {% endif %}
 $('#amount').val($('#totalPrice').html())
+
+$('form').submit(function(e) {
+  e.preventDefault();
+  window.location.href = '/shop/pay/';
+});
 </script>
 {% endblock %}

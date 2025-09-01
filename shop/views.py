@@ -216,7 +216,9 @@ from math import ceil
 import json
 from django.views.decorators.csrf import csrf_exempt
 from PayTm import Checksum
-from django.http import HttpResponse
+
+
+
 
 MERCHANT_KEY = 'Your-Merchant-Key-Here'
 
@@ -288,9 +290,14 @@ def tracker(request):
 
     return render(request, 'shop/tracker.html')
 
+# def productView(request, myid):
+#     product = Product.objects.filter(id=myid)
+#     return render(request, 'shop/prodView.html', {'product':product[0]})
 def productView(request, myid):
-    product = Product.objects.filter(id=myid)
-    return render(request, 'shop/prodView.html', {'product':product[0]})
+    product = Product.objects.get(id=myid)
+    images = product.images.all()  # fetch all related ProductImage objects
+    return render(request, 'shop/prodView.html', {'product': product, 'images': images})
+
 
 import razorpay
 from django.conf import settings
@@ -355,3 +362,22 @@ def handlerequest(request):
 def paymentstatus(request):
     success = request.GET.get("success", False)
     return render(request, "shop/paymentstatus.html", {"success": success})
+
+
+def initiate_payment(request):
+    if request.method == "POST":
+        amount = int(request.POST.get("amount")) * 100  # amount in paise (e.g. ₹10 → 1000)
+        
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        
+        payment_order = client.order.create(dict(amount=amount, currency="INR", payment_capture="1"))
+        payment_order_id = payment_order['id']
+        
+        context = {
+            'razorpay_key': settings.RAZORPAY_KEY_ID,
+            'order_id': payment_order_id,
+            'amount': amount,
+            'currency': 'INR',
+        }
+        return render(request, 'payment.html', context)
+    return render(request, "shop/pay_form.html")
