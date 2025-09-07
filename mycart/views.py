@@ -1,11 +1,10 @@
 from django.http import HttpResponse
-from django.shortcuts import render,redirect
-from django.http import HttpResponse
-from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.views.decorators.csrf import csrf_protect
+from .forms import SignUpForm
 
 
 def home(request):
@@ -61,13 +60,29 @@ def login_view(request):
 
 #     return render(request, "signup.html")
 
+@csrf_protect
 def signup_view(request):
     if request.method == 'POST':
+        # Debug: Print CSRF token info
+        print(f"CSRF Token in request: {request.POST.get('csrfmiddlewaretoken', 'NOT FOUND')}")
+        print(f"CSRF Token in session: {request.session.get('csrf_token', 'NOT FOUND')}")
+        
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')  # Change 'home' to your homepage url name
+            welcome_name = user.first_name if user.first_name else user.username
+            messages.success(request, f'Welcome {welcome_name}! Your account has been created successfully.')
+            return redirect('Home')  # Redirect to shop homepage
+        else:
+            messages.error(request, 'Please correct the errors below.')
+            # Debug: Print form errors
+            print(f"Form errors: {form.errors}")
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'You have been successfully logged out.')
+    return redirect('Home')

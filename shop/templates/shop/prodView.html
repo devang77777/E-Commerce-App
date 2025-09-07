@@ -1,133 +1,745 @@
 {% extends 'shop/basic.html' %}
 
-{% block title %}{{ product.product_name }} - My Cart{% endblock %}
+{% block title %}{{ product.product_name }} - My Awesome Cart{% endblock %}
+
+{% block css %}
+<style>
+/* Product View Specific Styles */
+.product-hero {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb-custom {
+    background: none;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-custom .breadcrumb-item {
+    color: var(--text-secondary);
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.product-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.product-gallery {
+    position: relative;
+    background: #f8fafc;
+    padding: 2rem;
+}
+
+.thumbnail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.thumbnail-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.thumbnail-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.thumbnail-img.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.main-image-container {
+    position: relative;
+    background: white;
+    border-radius: 15px;
+    padding: 1rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-product-image {
+    max-width: 100%;
+    max-height: 450px;
+    object-fit: contain;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.main-product-image:hover {
+    transform: scale(1.02);
+}
+
+.product-details {
+    padding: 3rem;
+    background: white;
+}
+
+.product-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.star {
+    color: #fbbf24;
+    font-size: 1.2rem;
+}
+
+.rating-badge {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.rating-count {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.product-description {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.price-section {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.current-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.price-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.quantity-section {
+    margin-bottom: 2rem;
+}
+
+.quantity-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 0.5rem;
+    width: fit-content;
+}
+
+.qty-btn {
+    width: 45px;
+    height: 45px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qty-decrease {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.qty-decrease:hover {
+    background: #dc2626;
+    color: white;
+    transform: scale(1.05);
+}
+
+.qty-increase {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.qty-increase:hover {
+    background: #16a34a;
+    color: white;
+    transform: scale(1.05);
+}
+
+.qty-input {
+    width: 80px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.total-section {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(34, 197, 94, 0.1);
+}
+
+.total-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.total-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.btn-add-cart {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    flex: 1;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-add-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+.btn-buy-now {
+    background: linear-gradient(135deg, var(--accent-color), #059669);
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.btn-buy-now:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    color: white;
+}
+
+.product-features {
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.features-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.feature-list li i {
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+.tax-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .product-title {
+        font-size: 2rem;
+    }
+    
+    .current-price {
+        font-size: 2rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .product-details {
+        padding: 2rem;
+    }
+    
+    .product-gallery {
+        padding: 1rem;
+    }
+    
+    .thumbnail-container {
+        flex-direction: row;
+        max-height: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 0.5rem;
+    }
+    
+    .thumbnail-img {
+        flex-shrink: 0;
+    }
+}
+
+/* Dark Mode Support */
+.dark-mode .product-hero {
+    background: linear-gradient(135deg, #1f2937, #374151);
+}
+
+.dark-mode .product-container {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .product-gallery {
+    background: #374151;
+}
+
+.dark-mode .main-image-container {
+    background: #4b5563;
+}
+
+.dark-mode .product-details {
+    background: #1f2937;
+}
+
+.dark-mode .product-title {
+    color: white;
+}
+
+.dark-mode .product-description {
+    color: #d1d5db;
+}
+
+.dark-mode .price-section {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark-mode .total-section {
+    background: linear-gradient(135deg, #14532d, #166534);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.dark-mode .product-features {
+    background: #374151;
+}
+
+.dark-mode .features-title {
+    color: white;
+}
+
+.dark-mode .feature-list li {
+    color: #d1d5db;
+}
+
+.dark-mode .tax-info {
+    background: #374151;
+    color: #d1d5db;
+}
+</style>
+{% endblock %}
 
 {% block body %}
-<div class="container my-5">
-  <div class="row">
-    <!-- Image Section -->
-    <div class="col-md-6 d-flex">
-      <div class="bg-white p-3 rounded shadow-sm d-flex w-100">
-        <!-- Thumbnails -->
-        <div class="me-3 d-flex flex-column align-items-center overflow-auto"
-             style="max-height:500px; min-width:90px;">
-          {% for img in product.images.all %}
-            <img src="/media/{{ img.image }}"
-                 class="img-thumbnail mb-2 p-1 thumbnail-img"
-                 alt="{{ product.product_name }}"
-                 style="width:70px; height:70px; object-fit:cover; cursor:pointer;"
-                 onclick="changeMainImage('/media/{{ img.image }}', this)">
-          {% endfor %}
-        </div>
-
-        <!-- Main Image -->
-        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-          <img id="mainProductImage"
-               src="/media/{{ product.images.first.image }}"
-               class="rounded shadow-sm"
-               alt="{{ product.product_name }}"
-               style="max-height:480px; max-width:100%; object-fit:contain;">
-        </div>
-      </div>
+<!-- Product Hero -->
+<section class="product-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-custom">
+                <li class="breadcrumb-item"><a href="/shop" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a href="/shop" class="text-decoration-none">Products</a></li>
+                <li class="breadcrumb-item active">{{ product.category }}</li>
+            </ol>
+        </nav>
     </div>
+</section>
 
-    <!-- Details Section -->
-    <div class="col-md-6">
-      <div class="bg-white p-4 rounded shadow-sm">
-        <h3 class="mb-2">{{ product.product_name }}</h3>
-        <div class="mb-2">
-          <span class="badge bg-warning text-dark"><i class="fa fa-star"></i> 4.2</span>
-          <span class="text-muted ms-2">10 ratings</span>
+<!-- Product Details -->
+<div class="container">
+    <div class="product-container">
+        <div class="row g-0">
+            <!-- Product Gallery -->
+            <div class="col-lg-6">
+                <div class="product-gallery">
+                    <div class="row g-3">
+                        <!-- Thumbnails -->
+                        <div class="col-auto">
+                            <div class="thumbnail-container">
+                                {% for img in product.images.all %}
+                                <img src="/media/{{ img.image }}"
+                                     class="thumbnail-img {% if forloop.first %}active{% endif %}"
+                                     alt="{{ product.product_name }}"
+                                     onclick="changeMainImage('/media/{{ img.image }}', this)">
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Main Image -->
+                        <div class="col">
+                            <div class="main-image-container">
+                                <img id="mainProductImage"
+                                     src="/media/{{ product.images.first.image }}"
+                                     class="main-product-image"
+                                     alt="{{ product.product_name }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product Details -->
+            <div class="col-lg-6">
+                <div class="product-details">
+                    <h1 class="product-title">{{ product.product_name }}</h1>
+                    
+                    <div class="product-rating">
+                        <div class="rating-stars">
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                        </div>
+                        <span class="rating-badge">4.2</span>
+                        <span class="rating-count">(127 reviews)</span>
+                    </div>
+                    
+                    <p class="product-description">{{ product.desc }}</p>
+                    
+                    <div class="price-section">
+                        <div class="price-label">Current Price</div>
+                        {% load humanize %}
+                        <div class="current-price" id="unitPrice">₹{{ product.price|intcomma }}</div>
+                    </div>
+                    
+                    <div class="quantity-section">
+                        <label class="quantity-label">Quantity:</label>
+                        <div class="quantity-controls">
+                            <button class="qty-btn qty-decrease" id="decreaseQty" type="button">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="text" class="qty-input" id="qty" value="1" readonly>
+                            <button class="qty-btn qty-increase" id="increaseQty" type="button">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="total-section">
+                        <div class="total-label">Total Price</div>
+                        <div class="total-price" id="totalPrice">₹{{ product.price|intcomma }}</div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn-add-cart" id="addToCart">
+                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                        </button>
+                        <button class="btn-buy-now" id="buyNow">
+                            <i class="fas fa-bolt me-2"></i>Buy Now
+                        </button>
+                    </div>
+                    
+                    <div class="product-features">
+                        <h5 class="features-title">Product Features</h5>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> High quality materials</li>
+                            <li><i class="fas fa-check"></i> Fast shipping available</li>
+                            <li><i class="fas fa-check"></i> 30-day return policy</li>
+                            <li><i class="fas fa-check"></i> 1-year warranty included</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tax-info">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Inclusive of all taxes. Free shipping on orders above ₹999.
+                    </div>
+                </div>
+            </div>
         </div>
-        <p class="mb-3">{{ product.desc }}</p>
-        {% load humanize %}
-        <h4 class="text-success mb-3" id="unitPrice">&#8377;{{ product.price|intcomma }}</h4>
-        
-
-        <!-- Quantity Selector -->
-        <div class="mb-3">
-          <span class="fw-bold">Quantity:</span>
-          <div class="input-group" style="width:130px; display:inline-flex;">
-            <button class="btn btn-outline-secondary" id="decreaseQty" type="button">-</button>
-            <input type="text" class="form-control text-center" id="qty" value="1" readonly>
-            <button class="btn btn-outline-secondary" id="increaseQty" type="button">+</button>
-          </div>
-        </div>
-
-        <!-- Total Price -->
-        <div class="mb-4">
-          <span class="fw-bold">Total Price:</span>
-          <span class="h5 text-primary" id="totalPrice">&#8377;{{ product.price|intcomma }}</span>
-        </div>
-
-        <!-- Buttons -->
-        <div class="mb-3">
-          <button class="btn btn-warning btn-lg me-2" id="addToCart">
-            <i class="fa fa-shopping-cart"></i> Add to Cart
-          </button>
-          <button class="btn btn-success btn-lg">Buy Now</button>
-        </div>
-
-        <div>
-          <small class="text-muted">Inclusive of all taxes</small>
-        </div>
-      </div>
     </div>
-  </div>
 </div>
 {% endblock %}
 
 {% block js %}
-<script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
 <script>
-$(document).ready(function() {
-  var unitPrice = parseFloat('{{ product.price }}');
-  var qty = 1;
-
-  function updateTotal() {
-    $('#totalPrice').text('₹' + (unitPrice * qty).toLocaleString());
-    $('#qty').val(qty);
-  }
-
-  $('#increaseQty').click(function() {
-    qty += 1;
-    updateTotal();
-  });
-
-  $('#decreaseQty').click(function() {
-    if (qty > 1) {
-      qty -= 1;
-      updateTotal();
+document.addEventListener('DOMContentLoaded', function() {
+    const unitPrice = parseFloat('{{ product.price }}');
+    let qty = 1;
+    
+    // Update total price function
+    function updateTotal() {
+        const total = unitPrice * qty;
+        document.getElementById('totalPrice').textContent = '₹' + total.toLocaleString();
+        document.getElementById('qty').value = qty;
     }
-  });
-
-  $('#addToCart').click(function() {
-    var cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
-    var idstr = 'pr{{ product.id }}';
-    cart[idstr] = [qty, '{{ product.product_name }}', unitPrice];
-    localStorage.setItem('cart', JSON.stringify(cart));
-    document.getElementById('cart').innerHTML = Object.keys(cart).length;
-    alert('Added to cart!');
-   
-  });
-
-  if(localStorage.getItem('cart')) {
-    document.getElementById('cart').innerHTML = Object.keys(JSON.parse(localStorage.getItem('cart'))).length;
-  }
- $('.btn-success').click(function() {
-  window.location.href = '/shop/checkout/';
+    
+    // Quantity controls with animations
+    document.getElementById('increaseQty').addEventListener('click', function() {
+        qty += 1;
+        updateTotal();
+        
+        // Add animation
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            this.style.transform = 'scale(1)';
+        }, 150);
+    });
+    
+    document.getElementById('decreaseQty').addEventListener('click', function() {
+        if (qty > 1) {
+            qty -= 1;
+            updateTotal();
+            
+            // Add animation
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        }
+    });
+    
+    // Add to cart with modern notification
+    document.getElementById('addToCart').addEventListener('click', function() {
+        const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+        const idstr = 'pr{{ product.id }}';
+        cart[idstr] = [qty, '{{ product.product_name }}', unitPrice];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update cart count
+        document.getElementById('cart').textContent = Object.keys(cart).length;
+        
+        // Show success notification
+        showNotification('Product added to cart successfully!', 'success');
+        
+        // Add button animation
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            this.style.transform = 'scale(1)';
+        }, 150);
+    });
+    
+    // Buy now button
+    document.getElementById('buyNow').addEventListener('click', function() {
+        // Add to cart first
+        const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+        const idstr = 'pr{{ product.id }}';
+        cart[idstr] = [qty, '{{ product.product_name }}', unitPrice];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Redirect to checkout
+        window.location.href = '/shop/checkout/';
+    });
+    
+    // Initialize cart count
+    if (localStorage.getItem('cart')) {
+        const cart = JSON.parse(localStorage.getItem('cart'));
+        document.getElementById('cart').textContent = Object.keys(cart).length;
+    }
+    
+    // Initialize popover
+    const popoverTrigger = document.getElementById('popcart');
+    if (popoverTrigger) {
+        const popover = new bootstrap.Popover(popoverTrigger, {
+            content: '<h5>Cart for your items in my shopping cart</h5>',
+            html: true
+        });
+    }
+    
+    // Add loading animation to product details
+    const productDetails = document.querySelector('.product-details');
+    if (productDetails) {
+        productDetails.style.opacity = '0';
+        productDetails.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            productDetails.style.transition = 'all 0.6s ease';
+            productDetails.style.opacity = '1';
+            productDetails.style.transform = 'translateY(0)';
+        }, 300);
+    }
 });
 
-  $('#popcart').popover();
-  document.getElementById("popcart").setAttribute('data-content', '<h5>Cart for your items in my shopping cart</h5>');
-});
-
+// Change main image function with smooth transition
 function changeMainImage(src, thumbElement) {
-  document.getElementById("mainProductImage").src = src;
-  document.querySelectorAll('.thumbnail-img').forEach(img => {
-    img.classList.remove('border-primary');
-  });
-  thumbElement.classList.add('border-primary');
+    const mainImage = document.getElementById('mainProductImage');
+    
+    // Add fade effect
+    mainImage.style.opacity = '0.5';
+    mainImage.style.transform = 'scale(0.95)';
+    
+    setTimeout(() => {
+        mainImage.src = src;
+        mainImage.style.opacity = '1';
+        mainImage.style.transform = 'scale(1)';
+    }, 150);
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail-img').forEach(img => {
+        img.classList.remove('active');
+    });
+    thumbElement.classList.add('active');
 }
+
+// Modern notification system
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 120px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
+// Add smooth scroll behavior for any anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Add keyboard navigation for quantity controls
+document.addEventListener('keydown', function(e) {
+    if (e.target.id === 'qty') {
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            document.getElementById('increaseQty').click();
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            document.getElementById('decreaseQty').click();
+        }
+    }
+});
+
+// Add image zoom functionality on double click
+document.getElementById('mainProductImage').addEventListener('dblclick', function() {
+    if (this.style.transform === 'scale(1.5)') {
+        this.style.transform = 'scale(1)';
+        this.style.cursor = 'zoom-in';
+    } else {
+        this.style.transform = 'scale(1.5)';
+        this.style.cursor = 'zoom-out';
+    }
+});
+
+// Add hover effect for action buttons
+document.querySelectorAll('.btn-add-cart, .btn-buy-now').forEach(btn => {
+    btn.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-2px)';
+    });
+    
+    btn.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+    });
+});
 </script>
 {% endblock %}

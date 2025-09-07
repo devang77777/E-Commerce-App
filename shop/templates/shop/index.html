@@ -3,175 +3,530 @@
 
 {% block css %}
 <style>
-/* Card styles */
-.card {
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 1000,0 1000,100 0,80"/></svg>');
+    background-size: cover;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.hero-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
     border: none;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
-
-.card-img-top {
-    width: 100%;
-    height: 220px;
-    object-fit: contain;
-    padding: 10px;
-    border-radius: 8px 8px 0 0;
-    background-color: #f8f9fa;
-}
-
-.card-body {
-    text-align: center;
-    padding: 1rem 1rem;
-}
-
-.card-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    min-height: 48px;
-}
-
-.card-text {
-    color: #666;
-    font-size: 0.875rem;
-    min-height: 48px;
-}
-
-.card h6 {
+    border-radius: 50px;
+    padding: 1rem 2rem;
     font-size: 1.1rem;
-    font-weight: bold;
-    color: #0d6efd;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
-/* Fixed carousel control styles */
+.hero-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    color: white;
+}
+
+/* Section Headers */
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+}
+
+.section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Modern Card Styles */
+.product-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    background: white;
+    position: relative;
+    height: 100%;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover::before {
+    transform: scaleX(1);
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.product-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    padding: 1rem;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-body {
+    padding: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100% - 250px);
+}
+
+.product-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    min-height: 2.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    min-height: 3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Modern Buttons */
+.btn-modern {
+    border-radius: 25px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary-modern {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+.btn-outline-modern {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline-modern:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Carousel Enhancements */
+.carousel-container {
+    position: relative;
+    padding: 0 2rem;
+    margin: 2rem 0;
+}
+
+.carousel {
+    overflow: hidden;
+    border-radius: 20px;
+}
+
 .carousel-control-prev,
 .carousel-control-next {
-    width: 40px;
-    height: 40px;
-    background-color: #0d6efd;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     border-radius: 50%;
     top: 50%;
     transform: translateY(-50%);
     opacity: 0.9;
     z-index: 10;
+    border: none;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
 }
 
 .carousel-control-prev {
-    left: -20px;
+    left: -25px;
 }
 
 .carousel-control-next {
-    right: -20px;
+    right: -25px;
 }
 
 .carousel-control-prev:hover,
 .carousel-control-next:hover {
     opacity: 1;
-    background-color: #0b5ed7;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-size: 60%;
+    background-size: 50%;
     width: 20px;
     height: 20px;
 }
 
-.carousel-indicators .active {
-    background-color: #0d6efd;
+.carousel-indicators {
+    bottom: -50px;
 }
 
 .carousel-indicators [data-bs-target] {
-    background-color: #dee2e6;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #d1d5db;
+    border: none;
+    margin: 0 5px;
+    transition: all 0.3s ease;
 }
 
-.btn {
-    margin: 5px 3px;
-    border-radius: 6px;
-    font-size: 0.875rem;
+.carousel-indicators .active {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    transform: scale(1.2);
 }
 
-.btn-outline-primary {
-    border: 1px solid #0d6efd;
-    color: #0d6efd;
+/* Category Badge */
+.category-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, var(--accent-color), #059669);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 5;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
 }
 
-.btn-outline-primary:hover {
-    background-color: #0d6efd;
-    color: #fff;
+/* Loading Animation */
+.loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
 }
 
-/* Container adjustments for carousel */
-.carousel-container {
-    position: relative;
-    padding: 0 30px;
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
 }
 
-.carousel {
-    overflow: hidden;
-}
-.clickable-card {
-    cursor: pointer;
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .carousel-container {
+        padding: 0 1rem;
+    }
+    
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .carousel-control-prev {
+        left: -20px;
+    }
+    
+    .carousel-control-next {
+        right: -20px;
+    }
+    
+    .product-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-modern {
+        width: 100%;
+        max-width: 200px;
+    }
 }
 
+/* Dark Mode Support */
+.dark-mode .product-card {
+    background: #1f2937;
+    color: white;
+}
+
+.dark-mode .product-title {
+    color: white;
+}
+
+.dark-mode .product-description {
+    color: #d1d5db;
+}
+
+.dark-mode .section-title {
+    color: white;
+}
+
+.dark-mode .section-subtitle {
+    color: #d1d5db;
+}
 </style>
 {% endblock %}
 
 
 {% block body %}
 {% load static %}
-<div class="container py-4">
-    {% for product, range, nSlides in allProds %}
-    <h4 class="mb-3 fw-semibold">Flash Sale on {{ product.0.category }} - Recommended Items</h4>
-    <div class="carousel-container">
-        <div id="carousel{{ forloop.counter }}" class="carousel slide" data-bs-ride="carousel">
-            
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="row">
-                        {% for i in product %}
-                        <div class="col-md-3 mb-4">
-                            <div class="card h-100">
-                                <img src="/media/{{ i.image }}" class="card-img-top" alt="{{ i.product_name }}">
-                                <div class="card-body d-flex flex-column justify-content-between">
-                                    <h5 class="card-title" id="namepr{{ i.id }}">{{ i.product_name }}</h5>
-                                    <p class="card-text">{{ i.desc|slice:"0:60" }}...</p>
-                                    <h6>Price: ₹<span id="pricepr{{ i.id }}">{{ i.price }}</span></h6>
-                                    <div id="divpr{{ i.id }}" class="divpr">
-                                        <button id="pr{{ i.id }}" class="btn btn-primary cart">Add To Cart</button>
-                                        <a href="/shop/products/{{ i.id }}">
-                                            <button class="btn btn-outline-primary">QuickView</button>
-                                        </a>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="hero-title">Discover Amazing Products</h1>
+                    <p class="hero-subtitle">Shop the latest trends with unbeatable prices and fast delivery. Your perfect shopping experience starts here.</p>
+                    <a href="#products" class="hero-btn">
+                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="fas fa-shopping-cart" style="font-size: 8rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section id="products" class="py-5">
+    <div class="container">
+        {% for product, range, nSlides in allProds %}
+        <div class="section-header">
+            <h2 class="section-title" style="color: #000000;">
+                
+                Flash Sale on {{ product.0.category }}
+            </h2>
+            {% comment %} <p class="section-subtitle">Discover our handpicked selection of {{ product.0.category }} with exclusive discounts</p> {% endcomment %}
+        </div>
+        
+        <div class="carousel-container">
+            <div id="carousel{{ forloop.counter }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row g-4">
+                            {% for i in product %}
+                            <div class="col-lg-3 col-md-4 col-sm-6">
+                                <div class="product-card">
+                                    <div class="category-badge">
+                                        {{ i.category }}
+                                    </div>
+                                    <img src="/media/{{ i.image }}" class="product-image" alt="{{ i.product_name }}">
+                                    <div class="product-body">
+                                        <h5 class="product-title" id="namepr{{ i.id }}">{{ i.product_name }}</h5>
+                                        <p class="product-description">{{ i.desc|slice:"0:80" }}...</p>
+                                        <div class="product-price">
+                                            <i class="fas fa-rupee-sign me-1"></i>
+                                            <span id="pricepr{{ i.id }}">{{ i.price }}</span>
+                                        </div>
+                                        <div class="product-actions" id="divpr{{ i.id }}">
+                                            <button id="pr{{ i.id }}" class="btn btn-modern btn-primary-modern cart">
+                                                <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                                            </button>
+                                            <a href="/shop/products/{{ i.id }}">
+                                                <button class="btn btn-modern btn-outline-modern">
+                                                    <i class="fas fa-eye me-1"></i>Quick View
+                                                </button>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            {% if forloop.counter|divisibleby:4 and not forloop.last %}
                         </div>
-                        {% if forloop.counter|divisibleby:4 and not forloop.last %}
-                    </div></div><div class="carousel-item"><div class="row">
-                        {% endif %}
-                        {% endfor %}
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row g-4">
+                            {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+                <!-- Carousel Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Why Choose Us?</h2>
+            <p class="section-subtitle">Experience the best in online shopping with our premium services</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-shipping-fast" style="font-size: 3rem; color: var(--accent-color);"></i>
+                    </div>
+                    <h5 class="fw-bold">Fast Delivery</h5>
+                    <p class="text-muted">Get your orders delivered within 24-48 hours with our express shipping service.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-shield-alt" style="font-size: 3rem; color: var(--primary-color);"></i>
+                    </div>
+                    <h5 class="fw-bold">Secure Payment</h5>
+                    <p class="text-muted">Shop with confidence using our secure payment gateway with 256-bit SSL encryption.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-undo" style="font-size: 3rem; color: var(--accent-color);"></i>
+                    </div>
+                    <h5 class="fw-bold">Easy Returns</h5>
+                    <p class="text-muted">Not satisfied? Return any item within 30 days for a full refund, no questions asked.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-headset" style="font-size: 3rem; color: var(--primary-color);"></i>
+                    </div>
+                    <h5 class="fw-bold">24/7 Support</h5>
+                    <p class="text-muted">Our customer support team is available round the clock to help you with any queries.</p>
+                </div>
+            </div>
         </div>
     </div>
-    {% endfor %}
-</div>
+</section>
 {% endblock %}
 
 {% block js %}
@@ -180,11 +535,29 @@
 let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
 updateCart(cart);
 
-// Add to Cart Button
-document.querySelectorAll('.divpr').forEach(function(div) {
+// Debug function to test cart functionality
+function debugCart() {
+    console.log('Current cart:', cart);
+    console.log('Cart keys:', Object.keys(cart));
+    for (let item in cart) {
+        console.log(`Item ${item}:`, cart[item]);
+        console.log(`Element div${item} exists:`, document.getElementById('div' + item) !== null);
+    }
+}
+
+// Add to Cart Button with modern animations
+document.querySelectorAll('.product-actions').forEach(function(div) {
     div.addEventListener('click', function(e) {
-        if (e.target.classList.contains('cart')) {
-            let idstr = e.target.id;
+        if (e.target.classList.contains('cart') || e.target.closest('.cart')) {
+            let button = e.target.classList.contains('cart') ? e.target : e.target.closest('.cart');
+            let idstr = button.id;
+            
+            // Add animation effect
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+            }, 150);
+            
             if (cart[idstr] !== undefined) {
                 cart[idstr][0] += 1;
             } else {
@@ -193,76 +566,508 @@ document.querySelectorAll('.divpr').forEach(function(div) {
                 cart[idstr] = [1, name, price];
             }
             updateCart(cart);
+            
+            // Show success popup message
+            showNotification('Item added to cart successfully!', 'success');
         }
     });
 });
 
-// Update Popover
+// Modern notification system with enhanced styling
+function showNotification(message, type = 'info') {
+    // Remove any existing notifications
+    const existingNotifications = document.querySelectorAll('.cart-notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed cart-notification`;
+    notification.style.cssText = `
+        top: 120px; 
+        right: 20px; 
+        z-index: 9999; 
+        min-width: 320px; 
+        max-width: 400px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        backdrop-filter: blur(10px);
+        border: none;
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    // Set background based on type
+    if (type === 'success') {
+        notification.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        notification.style.color = 'white';
+    } else if (type === 'info') {
+        notification.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+        notification.style.color = 'white';
+    }
+    
+    notification.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'info' ? 'info-circle' : 'exclamation-circle'} me-3" style="font-size: 1.2rem;"></i>
+            <div class="flex-grow-1">
+                <strong>${message}</strong>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" style="opacity: 0.8;"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 3000);
+}
+
+// Update Popover with modern styling and detailed information
 function updatePopover(cart) {
-    let popStr = "<h5>Cart Summary</h5><div class='px-2'>";
+    let popStr = `
+        <div class="cart-popover">
+            <h6 class="fw-bold mb-3">
+                <i class="fas fa-shopping-cart me-2"></i>Cart Summary
+            </h6>
+            <div class="cart-items">`;
+    
     let i = 1;
+    let total = 0;
+    let itemCount = 0;
+    
     for (let item in cart) {
-        popStr += `<b>${i}</b>. ${document.getElementById('name' + item).innerText.slice(0, 20)}... Qty: ${cart[item][0]}<br>`;
+        let itemName = cart[item][1]; // Item name from cart
+        let itemQty = cart[item][0]; // Item quantity
+        let itemPrice = cart[item][2]; // Item price
+        let itemTotal = itemQty * itemPrice;
+        total += itemTotal;
+        itemCount += itemQty;
+        
+        popStr += `
+            <div class="cart-item mb-3 p-2 border rounded">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold mb-1 text-dark">${itemName}</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-hashtag me-1"></i>Qty: ${itemQty}
+                            </small>
+                            <small class="text-muted">
+                                <i class="fas fa-rupee-sign me-1"></i>Price: ₹${itemPrice}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Item Total:</small>
+                    <strong class="text-success">₹${itemTotal}</strong>
+                </div>
+            </div>`;
         i++;
     }
-    popStr += "</div><a href='/shop/checkout'><button class='btn btn-primary mt-2'>Checkout</button></a> <button class='btn btn-danger mt-2' onclick='clearCart()'>Clear Cart</button>";
+    
+    if (Object.keys(cart).length === 0) {
+        popStr += `
+            <div class="text-center py-4">
+                <i class="fas fa-shopping-cart text-muted mb-2" style="font-size: 2rem;"></i>
+                <p class="text-muted mb-0">Your cart is empty</p>
+                <small class="text-muted">Add some items to get started!</small>
+            </div>`;
+    }
+    
+    popStr += `
+            </div>`;
+    
+    if (Object.keys(cart).length > 0) {
+        popStr += `
+            <hr class="my-3">
+            <div class="cart-summary">
+                <div class="summary-header mb-3">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fas fa-calculator me-2"></i>Order Summary
+                    </h6>
+                </div>
+                
+                <div class="summary-details mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">
+                            <i class="fas fa-boxes me-1"></i>Total Items:
+                        </span>
+                        <strong>${itemCount}</strong>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">
+                            <i class="fas fa-list me-1"></i>Unique Products:
+                        </span>
+                        <strong>${Object.keys(cart).length}</strong>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">
+                            <i class="fas fa-shipping-fast me-1"></i>Delivery:
+                        </span>
+                        <span class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>Free
+                        </span>
+                    </div>
+                    
+                    <hr class="my-2">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <strong class="fs-5">
+                            <i class="fas fa-rupee-sign me-1"></i>Grand Total:
+                        </strong>
+                        <strong class="fs-5 text-success">₹${total}</strong>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <div class="d-grid gap-2">
+                        <a href='/shop/checkout' class='btn btn-primary btn-sm'>
+                            <i class="fas fa-credit-card me-1"></i>Proceed to Checkout
+                        </a>
+                        <div class="d-flex gap-2">
+                            <a href='/shop' class='btn btn-outline-primary btn-sm flex-fill'>
+                                <i class="fas fa-shopping-bag me-1"></i>Continue Shopping
+                            </a>
+                            <button class='btn btn-outline-danger btn-sm flex-fill' onclick='clearCart()'>
+                                <i class="fas fa-trash me-1"></i>Clear Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    }
+    
+    popStr += `
+        </div>`;
+    
     document.getElementById('popcart').setAttribute('data-bs-content', popStr);
     let popover = bootstrap.Popover.getInstance(document.getElementById('popcart'));
     if (popover) popover.show();
 }
 
-// Clear Cart
+// Clear Cart with confirmation
 function clearCart() {
-    for (let item in cart) {
-        document.getElementById('div' + item).innerHTML = `<button id="${item}" class="btn btn-primary cart">Add To Cart</button>`;
+    if (confirm('Are you sure you want to clear your cart?')) {
+        for (let item in cart) {
+            // Get the product ID from the cart item ID (remove 'pr' prefix)
+            const productId = item.replace('pr', '');
+            document.getElementById('div' + item).innerHTML = `
+                <button id="${item}" class="btn btn-modern btn-primary-modern cart">
+                    <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                </button>
+                <a href="/shop/products/${productId}">
+                    <button class="btn btn-modern btn-outline-modern">
+                        <i class="fas fa-eye me-1"></i>Quick View
+                    </button>
+                </a>`;
+        }
+        localStorage.clear();
+        cart = {};
+        updateCart(cart);
+        showNotification('Cart cleared successfully!', 'info');
     }
-    localStorage.clear();
-    cart = {};
-    updateCart(cart);
 }
 
-// Update Cart UI
+// Update Cart UI with modern design
 function updateCart(cart) {
     let sum = 0;
+    console.log('Updating cart:', cart); // Debug log
+    
     for (let item in cart) {
         sum += cart[item][0];
-        document.getElementById('div' + item).innerHTML = `
-            <button id="minus${item}" class="btn btn-sm btn-danger minus">-</button>
-            <span id="val${item}" class="mx-1">${cart[item][0]}</span>
-            <button id="plus${item}" class="btn btn-sm btn-success plus">+</button>`;
+        const divElement = document.getElementById('div' + item);
+        
+        if (divElement) {
+            divElement.innerHTML = `
+                <div class="quantity-controls d-flex align-items-center justify-content-center gap-2">
+                    <button id="minus${item}" class="btn btn-sm btn-outline-danger minus" type="button">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span id="val${item}" class="fw-bold px-2">${cart[item][0]}</span>
+                    <button id="plus${item}" class="btn btn-sm btn-outline-success plus" type="button">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>`;
+            console.log('Updated div for item:', item); // Debug log
+        } else {
+            console.error('Element not found: div' + item); // Debug log
+        }
     }
+    
     localStorage.setItem('cart', JSON.stringify(cart));
-    document.getElementById('cart').innerText = sum;
+    const cartElement = document.getElementById('cart');
+    if (cartElement) {
+        cartElement.innerText = sum;
+    }
     updatePopover(cart);
 }
 
-// Increment/Decrement Items
-document.querySelectorAll('.divpr').forEach(div => {
-    div.addEventListener('click', function(e) {
-        const target = e.target;
-        let id = target.id;
-        if (id.startsWith('minus')) {
-            id = id.slice(5);
-            if (cart[id]) {
-                cart[id][0] = Math.max(cart[id][0] - 1, 0);
-                if (cart[id][0] === 0) {
-                    delete cart[id];
-                    document.getElementById('div' + id).innerHTML = `<button id="${id}" class="btn btn-primary cart">Add To Cart</button>`;
-                } else {
-                    document.getElementById('val' + id).innerText = cart[id][0];
-                }
-                updateCart(cart);
-            }
-        }
-        if (id.startsWith('plus')) {
-            id = id.slice(4);
-            if (cart[id]) {
-                cart[id][0]++;
+// Increment/Decrement Items with animations
+document.addEventListener('click', function(e) {
+    const target = e.target;
+    let id = target.id;
+    
+    // Handle minus button (check both button and icon clicks)
+    if (id.startsWith('minus') || target.closest('.minus')) {
+        // Get the actual button element
+        const button = id.startsWith('minus') ? target : target.closest('.minus');
+        id = button.id.slice(5); // Remove 'minus' prefix to get original item ID
+        
+        console.log('Minus button clicked for item:', id); // Debug log
+        
+        if (cart[id]) {
+            cart[id][0] = Math.max(cart[id][0] - 1, 0);
+            
+            // Add animation effect
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+            }, 150);
+            
+            if (cart[id][0] === 0) {
+                delete cart[id];
+                // Get the product ID from the cart item ID (remove 'pr' prefix)
+                const productId = id.replace('pr', '');
+                document.getElementById('div' + id).innerHTML = `
+                    <button id="${id}" class="btn btn-modern btn-primary-modern cart">
+                        <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                    </button>
+                    <a href="/shop/products/${productId}">
+                        <button class="btn btn-modern btn-outline-modern">
+                            <i class="fas fa-eye me-1"></i>Quick View
+                        </button>
+                    </a>`;
+                showNotification('Item removed from cart!', 'info');
+            } else {
                 document.getElementById('val' + id).innerText = cart[id][0];
-                updateCart(cart);
+                showNotification('Quantity updated!', 'info');
             }
+            updateCart(cart);
         }
+    }
+    
+    // Handle plus button (check both button and icon clicks)
+    if (id.startsWith('plus') || target.closest('.plus')) {
+        // Get the actual button element
+        const button = id.startsWith('plus') ? target : target.closest('.plus');
+        id = button.id.slice(4); // Remove 'plus' prefix to get original item ID
+        
+        console.log('Plus button clicked for item:', id); // Debug log
+        
+        if (cart[id]) {
+            cart[id][0]++;
+            
+            // Add animation effect
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+            }, 150);
+            
+            document.getElementById('val' + id).innerText = cart[id][0];
+            updateCart(cart);
+            showNotification('Quantity increased!', 'success');
+        }
+    }
+});
+
+// Smooth scroll for hero button
+document.addEventListener('DOMContentLoaded', function() {
+    const heroBtn = document.querySelector('.hero-btn');
+    if (heroBtn) {
+        heroBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector('#products');
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    }
+    
+    // Add loading animation to product cards
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
     });
 });
+
+// Add CSS for cart popover and notifications
+const style = document.createElement('style');
+style.textContent = `
+    .cart-popover {
+        min-width: 350px;
+        max-width: 400px;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .cart-items {
+        max-height: 300px;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+    
+    .cart-item {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef !important;
+        transition: all 0.3s ease;
+    }
+    
+    .cart-item:hover {
+        background: #e9ecef;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .cart-summary {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #dee2e6;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .summary-header {
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+    
+    .summary-details {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #f1f3f4;
+    }
+    
+    .action-buttons .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .action-buttons .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .quantity-controls {
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 0.5rem;
+    }
+    
+    /* Custom scrollbar for cart items */
+    .cart-items::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .cart-items::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .cart-items::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+    
+    .cart-items::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+    
+    /* Notification animations */
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    
+    .cart-notification {
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+    }
+    
+    /* Enhanced button animations */
+    .btn-modern {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .btn-modern:active {
+        transform: scale(0.95);
+    }
+    
+    /* Quantity control buttons */
+    .quantity-controls .btn {
+        transition: all 0.2s ease;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+    
+    .quantity-controls .btn:hover {
+        transform: scale(1.1);
+    }
+    
+    .quantity-controls .btn:active {
+        transform: scale(0.9);
+    }
+    
+    /* Popover styling */
+    .popover {
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border-radius: 12px;
+    }
+    
+    .popover-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px 12px 0 0;
+        font-weight: 600;
+    }
+    
+    .popover-body {
+        padding: 1.5rem;
+    }
+`;
+document.head.appendChild(style);
 </script>
 {% endblock %}

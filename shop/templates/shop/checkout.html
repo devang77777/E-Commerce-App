@@ -1,111 +1,936 @@
 {% extends 'shop/basic.html' %}
 {% block title%} Checkout - My Awesome Cart{% endblock %}
+
+{% block css %}
+<style>
+/* Checkout Page Specific Styles */
+.checkout-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.checkout-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 1000,0 1000,100 0,80"/></svg>');
+    background-size: cover;
+}
+
+.checkout-hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.checkout-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.checkout-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.checkout-content {
+    padding: 3rem 0;
+    background: #f8fafc;
+}
+
+.progress-container {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.step-number.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+}
+
+.step-number.completed {
+    background: linear-gradient(135deg, var(--accent-color), #059669);
+    color: white;
+}
+
+.step-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.step-label.active {
+    color: var(--primary-color);
+}
+
+.progress-line {
+    position: absolute;
+    top: 25px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 1;
+}
+
+.progress-line-fill {
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.cart-summary {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.summary-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cart-items {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 1.5rem;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.cart-item:hover {
+    background: #f1f5f9;
+    transform: translateY(-2px);
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.item-price {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.item-quantity {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.cart-total {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.total-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.total-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.checkout-form {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.form-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: white;
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #9ca3af;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus::placeholder {
+    color: transparent;
+}
+
+.form-group.focused .form-label {
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.form-group.focused .form-control {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: white;
+}
+
+.form-group {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.form-label {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+    border-radius: 15px;
+    padding: 1.25rem 3rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    width: 100%;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+.submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.submit-btn.loading {
+    pointer-events: none;
+}
+
+.submit-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.empty-cart-icon {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+}
+
+.empty-cart-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.empty-cart-text {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.shop-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.shop-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .checkout-title {
+        font-size: 2rem;
+    }
+    
+    .progress-steps {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .progress-line {
+        display: none;
+    }
+    
+    .checkout-form {
+        padding: 2rem;
+    }
+    
+    .cart-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+}
+
+/* Dark Mode Support */
+.dark-mode .checkout-content {
+    background: #111827;
+}
+
+.dark-mode .progress-container,
+.dark-mode .cart-summary,
+.dark-mode .checkout-form,
+.dark-mode .empty-cart {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .form-control {
+    background: #374151;
+    border-color: #4b5563;
+    color: white;
+}
+
+.dark-mode .form-control:focus {
+    background: #4b5563;
+    border-color: var(--primary-color);
+}
+
+.dark-mode .form-label,
+.dark-mode .form-title,
+.dark-mode .summary-title,
+.dark-mode .empty-cart-title {
+    color: white;
+}
+
+.dark-mode .form-subtitle,
+.dark-mode .empty-cart-text {
+    color: #d1d5db;
+}
+
+.dark-mode .cart-item {
+    background: #374151;
+}
+
+.dark-mode .cart-item:hover {
+    background: #4b5563;
+}
+
+.dark-mode .item-name {
+    color: white;
+}
+
+.dark-mode .item-price {
+    color: #d1d5db;
+}
+
+.dark-mode .cart-total {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark-mode .total-label {
+    color: white;
+}
+</style>
+{% endblock %}
+
 {% block body %}
-<div class="container">
-    <div class="col my-4">
-        <h2>Step 1 - My Awesome Cart Express Checkout - Review Your Cart Items</h2>
-        <div class="my-4">
-            <ul class="list-group" id="items">
-            </ul>
-
-            <nav aria-label="breadcrumb">
-  <ol class="breadcrumb mt-3">
-    <li class="breadcrumb-item active" aria-current="page">Your Cart Total Is <b>Rs. <span id="totalPrice"></span></b>. Enter your details below & place your order. Thanks for using My Awesome Cart!</li>
-  </ol>
-</nav>
-
-
-
-            
+<!-- Checkout Hero -->
+<section class="checkout-hero">
+    <div class="container">
+        <div class="checkout-hero-content text-center">
+            <h1 class="checkout-title">
+                <i class="fas fa-shopping-cart me-2"></i>Checkout
+            </h1>
+            <p class="checkout-subtitle">Complete your order and get your products delivered to your doorstep</p>
         </div>
     </div>
-    <div class="col my-4">
-        <h2>Step 2 - Enter Address & Other Details:</h2>
-        <form method="post" action="/shop/pay/">{% csrf_token %}
-            <input type="hidden" name="itemsJson" id="itemsJson">
-            <input type="hidden" name="amount" id="amount">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputname">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Name" Required>
+</section>
+
+<!-- Checkout Content -->
+<section class="checkout-content">
+    <div class="container">
+        <!-- Progress Steps -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-step">
+                    <div class="step-number active">1</div>
+                    <div class="step-label active">Review Cart</div>
                 </div>
-                <div class="form-group col-md-6">
-                    <label for="inputEmail4">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" Required>
+                <div class="progress-step">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Shipping Details</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Payment</div>
+                </div>
+                <div class="progress-line">
+                    <div class="progress-line-fill"></div>
                 </div>
             </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Cart Summary -->
+            <div class="col-lg-5">
+                <div class="cart-summary">
+                    <h3 class="summary-title">
+                        <i class="fas fa-shopping-bag me-2"></i>Order Summary
+                    </h3>
+                    
+                    <div class="cart-items" id="items">
+                        <!-- Cart items will be populated here -->
+                    </div>
+                    
+                    <div class="cart-total">
+                        <div class="total-label">Total Amount</div>
+                        <div class="total-amount">₹<span id="totalPrice">0</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Checkout Form -->
+            <div class="col-lg-7">
+                <div class="checkout-form">
+                    <h3 class="form-title">
+                        <i class="fas fa-shipping-fast me-2"></i>Shipping Details
+                    </h3>
+                    <p class="form-subtitle">Please provide your shipping information to complete your order.</p>
+                    
+                    <form method="post" action="/shop/pay/" id="checkoutForm" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="itemsJson" id="itemsJson">
+                        <input type="hidden" name="amount" id="amount">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name" class="form-label">
+                                        <i class="fas fa-user me-1"></i>Full Name
+                                    </label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           placeholder="Enter your full name" 
+                                           value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}" 
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="form-label">
+                                        <i class="fas fa-envelope me-1"></i>Email Address
+                                    </label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           placeholder="Enter your email" 
+                                           value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" 
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address1" class="form-label">
+                                <i class="fas fa-map-marker-alt me-1"></i>Address Line 1
+                            </label>
+                            <input type="text" class="form-control" id="address1" name="address1" 
+                                   placeholder="Street address, P.O. box, company name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address2" class="form-label">
+                                <i class="fas fa-building me-1"></i>Address Line 2
+                            </label>
+                            <input type="text" class="form-control" id="address2" name="address2" 
+                                   placeholder="Apartment, suite, unit, building, floor, etc.">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="city" class="form-label">
+                                        <i class="fas fa-city me-1"></i>City
+                                    </label>
+                                    <input type="text" class="form-control" id="city" name="city" 
+                                           placeholder="Enter your city" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="state" class="form-label">
+                                        <i class="fas fa-map me-1"></i>State
+                                    </label>
+                                    <input type="text" class="form-control" id="state" name="state" 
+                                           placeholder="State" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
             <div class="form-group">
-                <label for="inputAddress">Address</label>
-                <input type="text" class="form-control" id="address1" name="address1" placeholder="1234 Main St" Required>
+                                    <label for="zip_code" class="form-label">
+                                        <i class="fas fa-mail-bulk me-1"></i>ZIP Code
+                                    </label>
+                                    <input type="text" class="form-control" id="zip_code" name="zip_code" 
+                                           placeholder="ZIP" required>
+                                </div>
             </div>
-            <div class="form-group">
-                <label for="inputAddress2">Address line 2</label>
-                <input type="text" class="form-control" id="address2" name="address2" placeholder="Apartment, studio, or floor" Required>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputCity">City</label>
-                    <input type="text" class="form-control" id="city" name="city" Required>
                 </div>
-                <div class="form-group col-md-4">
-                    <label for="inputState">State</label>
-                    <input type="text" class="form-control" id="state" name="state"  placeholder="Enter State" Required>
+                        
+                        <div class="form-group">
+                            <label for="phone" class="form-label">
+                                <i class="fas fa-phone me-1"></i>Phone Number
+                            </label>
+                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                   placeholder="Enter your phone number" required>
                 </div>
-                <div class="form-group col-md-2">
-                    <label for="inputZip">Zip</label>
-                    <input type="text" class="form-control" id="zip_code" name="zip_code" Required>
+                        
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <i class="fas fa-credit-card me-2"></i>Proceed to Payment
+                        </button>
+                    </form>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="inputZip">Phone Number</label>
-                <input type="tel" class="form-control" id="phone" name="phone" Required>
             </div>
-            <button type="submit" class="btn btn-primary">Make Payment</button>
-        </form>
     </div>
-</div>
+</section>
 {% endblock %}
 {% block js %}
 <script>
-if (localStorage.getItem('cart') == null) {
-    var cart = {};
+document.addEventListener('DOMContentLoaded', function() {
+    // Load cart from localStorage
+    let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+    let sum = 0;
+    let totalPrice = 0;
+    
+    const itemsContainer = document.getElementById('items');
+    const totalPriceElement = document.getElementById('totalPrice');
+    const cartCountElement = document.getElementById('cart');
+    const itemsJsonInput = document.getElementById('itemsJson');
+    const amountInput = document.getElementById('amount');
+    
+    // Auto-populate form fields if user is authenticated
+    const nameField = document.getElementById('name');
+    const emailField = document.getElementById('email');
+    
+    // Check if fields are empty and user is authenticated
+    {% if user.is_authenticated %}
+        if (nameField && !nameField.value.trim()) {
+            nameField.value = '{{ user.get_full_name|default:user.username }}';
+        }
+        if (emailField && !emailField.value.trim()) {
+            emailField.value = '{{ user.email }}';
+        }
+    {% endif %}
+    
+    // Check if cart is empty
+    if (Object.keys(cart).length === 0) {
+        itemsContainer.innerHTML = `
+            <div class="empty-cart">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h4 class="empty-cart-title">Your cart is empty</h4>
+                <p class="empty-cart-text">Please add some items to your cart before checking out.</p>
+                <a href="/shop" class="shop-btn">
+                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                </a>
+            </div>
+        `;
 } else {
-    cart = JSON.parse(localStorage.getItem('cart'));
-}
-console.log(cart);
-var sum = 0;
-var totalPrice = 0;
-if ($.isEmptyObject(cart)) {
-    //if object is empty
-    mystr = `<p>Your cart is empty, please add some items to your cart before checking out!</p>`
-    $('#items').append(mystr);
-} else {
-    for (item in cart) {
+        // Display cart items
+        for (let item in cart) {
         let name = cart[item][1];
         let qty = cart[item][0];
         let itemPrice = cart[item][2];
-        sum = sum + qty;
-        totalPrice = totalPrice + qty* itemPrice;
-        mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    ${name}
-                    <span class="badge badge-primary badge-pill">${qty}</span>
-                </li>`
-        $('#items').append(mystr);
+            let itemTotal = qty * itemPrice;
+            
+            sum += qty;
+            totalPrice += itemTotal;
+            
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item';
+            cartItem.innerHTML = `
+                <div class="item-info">
+                    <div class="item-name">${name}</div>
+                    <div class="item-price">₹${itemPrice.toLocaleString()} each</div>
+                </div>
+                <div class="item-quantity">Qty: ${qty}</div>
+            `;
+            itemsContainer.appendChild(cartItem);
+        }
     }
-}
-document.getElementById('cart').innerHTML = sum;
-document.getElementById('totalPrice').innerHTML = totalPrice;
-$('#itemsJson').val(JSON.stringify(cart));
+    
+    // Update totals
+    cartCountElement.textContent = sum;
+    totalPriceElement.textContent = totalPrice.toLocaleString();
+    itemsJsonInput.value = JSON.stringify(cart);
+    amountInput.value = totalPrice;
+    
+    // Form validation and submission
+    const form = document.getElementById('checkoutForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Form validation
+    function validateField(field) {
+        const value = field.value.trim();
+        const fieldName = field.name;
+        let isValid = true;
+        let message = '';
+        
+        // Remove existing validation classes
+        field.classList.remove('is-valid', 'is-invalid');
+        
+        // Validation rules
+        switch(fieldName) {
+            case 'name':
+                if (value.length < 2) {
+                    isValid = false;
+                    message = 'Name must be at least 2 characters long.';
+                }
+                break;
+            case 'email':
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    isValid = false;
+                    message = 'Please enter a valid email address.';
+                }
+                break;
+            case 'phone':
+                const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                if (!phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''))) {
+                    isValid = false;
+                    message = 'Please enter a valid phone number.';
+                }
+                break;
+            case 'address1':
+                if (value.length < 5) {
+                    isValid = false;
+                    message = 'Please enter a complete address.';
+                }
+                break;
+            case 'city':
+                if (value.length < 2) {
+                    isValid = false;
+                    message = 'Please enter a valid city name.';
+                }
+                break;
+            case 'state':
+                if (value.length < 2) {
+                    isValid = false;
+                    message = 'Please enter a valid state name.';
+                }
+                break;
+            case 'zip_code':
+                if (value.length < 3) {
+                    isValid = false;
+                    message = 'Please enter a valid ZIP code.';
+                }
+                break;
+        }
+        
+        // Apply validation styling
+        if (isValid) {
+            field.classList.add('is-valid');
+        } else {
+            field.classList.add('is-invalid');
+        }
+        
+        return isValid;
+    }
+    
+    // Real-time validation
+    form.querySelectorAll('input[required]').forEach(field => {
+        field.addEventListener('blur', () => validateField(field));
+        field.addEventListener('input', () => {
+            if (field.classList.contains('is-invalid')) {
+                validateField(field);
+            }
+        });
+    });
+    
+    // Add focus effects to form fields
+    form.querySelectorAll('.form-control').forEach(field => {
+        field.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        field.addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                this.parentElement.classList.remove('focused');
+            }
+        });
+        
+        // Check if field has value on load
+        if (field.value.trim()) {
+            field.parentElement.classList.add('focused');
+        }
+        
+        // Save form data to localStorage
+        field.addEventListener('input', function() {
+            const formData = {};
+            form.querySelectorAll('.form-control').forEach(f => {
+                if (f.value.trim()) {
+                    formData[f.name] = f.value;
+                }
+            });
+            localStorage.setItem('checkoutFormData', JSON.stringify(formData));
+        });
+    });
+    
+    // Load saved form data
+    const savedFormData = localStorage.getItem('checkoutFormData');
+    if (savedFormData) {
+        const formData = JSON.parse(savedFormData);
+        Object.keys(formData).forEach(fieldName => {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (field && !field.value.trim()) {
+                field.value = formData[fieldName];
+                field.parentElement.classList.add('focused');
+            }
+        });
+    }
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validate all fields
+        const fields = form.querySelectorAll('input[required]');
+        let isFormValid = true;
+        
+        fields.forEach(field => {
+            if (!validateField(field)) {
+                isFormValid = false;
+            }
+        });
+        
+        if (isFormValid) {
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            
+            // Update progress
+            updateProgress(2);
+            
+            // Clear saved form data
+            localStorage.removeItem('checkoutFormData');
+            
+            // Submit form to payment page
+            setTimeout(() => {
+                // Submit the form to the payment page
+                form.submit();
+            }, 1500);
+        } else {
+            showNotification('Please fill in all required fields correctly.', 'danger');
+        }
+    });
+    
+    // Update progress indicator
+    function updateProgress(step) {
+        const progressLine = document.querySelector('.progress-line-fill');
+        const stepNumbers = document.querySelectorAll('.step-number');
+        const stepLabels = document.querySelectorAll('.step-label');
+        
+        // Update progress line
+        progressLine.style.width = `${(step - 1) * 50}%`;
+        
+        // Update step indicators
+        stepNumbers.forEach((stepNum, index) => {
+            if (index < step) {
+                stepNum.classList.add('completed');
+                stepNum.classList.remove('active');
+            } else if (index === step) {
+                stepNum.classList.add('active');
+                stepNum.classList.remove('completed');
+            } else {
+                stepNum.classList.remove('active', 'completed');
+            }
+        });
+        
+        stepLabels.forEach((label, index) => {
+            if (index < step) {
+                label.classList.add('active');
+            } else {
+                label.classList.remove('active');
+            }
+        });
+    }
+    
+    // Notification function
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 120px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    
+    // Add loading animation to cart items
+    const cartItems = document.querySelectorAll('.cart-item');
+    cartItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            item.style.transition = 'all 0.6s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // Handle thank you message
 {% if thank %}
-alert('Thanks for ordering with us. Your order is is {{id}}. Use it to track your order using our order tracker');
+    showNotification('Thanks for ordering with us! Your order ID is {{id}}. Use it to track your order.', 'success');
 localStorage.clear();
-document.location = "/shop";
+    setTimeout(() => {
+        window.location.href = "/shop";
+    }, 3000);
 {% endif %}
-$('#amount').val($('#totalPrice').html())
-
-$('form').submit(function(e) {
-  e.preventDefault();
-  window.location.href = '/shop/pay/';
 });
 </script>
 {% endblock %}

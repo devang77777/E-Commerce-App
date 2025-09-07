@@ -211,6 +211,7 @@
 
 
 from django.shortcuts import render
+from django.http import HttpResponse
 from .models import Product, ProductImage, Contact, Order, OrderUpdate
 from math import ceil
 import json
@@ -366,18 +367,48 @@ def paymentstatus(request):
 
 def initiate_payment(request):
     if request.method == "POST":
-        amount = int(request.POST.get("amount")) * 100  # amount in paise (e.g. ₹10 → 1000)
+        # Get form data from checkout
+        items_json = request.POST.get('itemsJson', '')
+        name = request.POST.get('name', '')
+        amount = int(float(request.POST.get('amount', '0')) * 100)  # Razorpay uses paise
+        email = request.POST.get('email', '')
+        address = request.POST.get('address1', '') + " " + request.POST.get('address2', '')
+        city = request.POST.get('city', '')
+        state = request.POST.get('state', '')
+        zip_code = request.POST.get('zip_code', '')
+        phone = request.POST.get('phone', '')
+
+        # Save order in database
+        order = Order(
+            items_json=items_json, name=name, email=email,
+            address=address, city=city, state=state,
+            zip_code=zip_code, phone=phone, amount=amount/100
+        )
+        order.save()
         
+        # Create order update
+        update = OrderUpdate(order_id=order.order_id, update_desc="The order has been placed")
+        update.save()
+
+        # Create Razorpay order
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        
-        payment_order = client.order.create(dict(amount=amount, currency="INR", payment_capture="1"))
-        payment_order_id = payment_order['id']
-        
+        razorpay_order = client.order.create({
+            "amount": amount,
+            "currency": "INR",
+            "payment_capture": "1"
+        })
+
+        # Pass details to payment template
         context = {
-            'razorpay_key': settings.RAZORPAY_KEY_ID,
-            'order_id': payment_order_id,
-            'amount': amount,
-            'currency': 'INR',
+            "razorpay_key": settings.RAZORPAY_KEY_ID,
+            "order_id": razorpay_order["id"],
+            "amount": amount,
+            "currency": "INR",
+            "name": name,
+            "email": email,
+            "phone": phone,
         }
-        return render(request, 'payment.html', context)
-    return render(request, "shop/pay_form.html")
+        return render(request, 'shop/payment.html', context)
+    
+    # If not POST, redirect to checkout
+    return render(request, 'shop/checkout.html')
