@@ -146,6 +146,28 @@
     font-size: 1.1rem;
 }
 
+.description-point {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0;
+    border-left: 3px solid var(--accent-color);
+    padding-left: 1rem;
+    background: rgba(16, 185, 129, 0.05);
+    border-radius: 0 8px 8px 0;
+    transition: all 0.3s ease;
+}
+
+.description-point:hover {
+    background: rgba(16, 185, 129, 0.1);
+    transform: translateX(5px);
+}
+
+.description-point i {
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
 .price-section {
     background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
     border-radius: 15px;
@@ -403,6 +425,15 @@
     color: #d1d5db;
 }
 
+.dark-mode .description-point {
+    background: rgba(16, 185, 129, 0.1);
+    border-left-color: var(--accent-color);
+}
+
+.dark-mode .description-point:hover {
+    background: rgba(16, 185, 129, 0.2);
+}
+
 .dark-mode .price-section {
     background: linear-gradient(135deg, #1e3a8a, #1e40af);
     border-color: rgba(59, 130, 246, 0.2);
@@ -496,7 +527,13 @@
                         <span class="rating-count">(127 reviews)</span>
                     </div>
                     
-                    <p class="product-description">{{ product.desc }}</p>
+                    <div class="product-description" id="productDescription">
+                        {% if product.desc %}
+                            <div style="display: none;">{{ product.desc }}</div>
+                        {% else %}
+                            <p>No description available.</p>
+                        {% endif %}
+                    </div>
                     
                     <div class="price-section">
                         <div class="price-label">Current Price</div>
@@ -555,99 +592,121 @@
 {% block js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const unitPrice = parseFloat('{{ product.price }}');
-    let qty = 1;
-    
-    // Update total price function
-    function updateTotal() {
-        const total = unitPrice * qty;
-        document.getElementById('totalPrice').textContent = '₹' + total.toLocaleString();
-        document.getElementById('qty').value = qty;
-    }
-    
-    // Quantity controls with animations
-    document.getElementById('increaseQty').addEventListener('click', function() {
-        qty += 1;
-        updateTotal();
-        
-        // Add animation
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            this.style.transform = 'scale(1)';
-        }, 150);
-    });
-    
-    document.getElementById('decreaseQty').addEventListener('click', function() {
-        if (qty > 1) {
-            qty -= 1;
-            updateTotal();
-            
-            // Add animation
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = 'scale(1)';
-            }, 150);
+    try {
+        const unitPrice = parseFloat('{{ product.price }}');
+        let qty = 1;
+
+        // Convert description to bullet points (defensive)
+        const descriptionContainer = document.getElementById('productDescription');
+        if (descriptionContainer) {
+            const hiddenDesc = descriptionContainer.querySelector('div[style="display: none;"]');
+            if (hiddenDesc) {
+                const description = (hiddenDesc.textContent || '').trim();
+                if (description) {
+                    const lines = description.split(/\r?\n/).filter(line => line.trim());
+                    let bulletPointsHTML = '';
+                    lines.forEach(line => {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine) {
+                            bulletPointsHTML += `
+                                <div class="description-point">
+                                    <i class="fas fa-check-circle me-2" style="color: var(--accent-color);"></i>
+                                    ${trimmedLine}
+                                </div>
+                            `;
+                        }
+                    });
+                    descriptionContainer.innerHTML = bulletPointsHTML;
+                }
+            }
         }
-    });
-    
-    // Add to cart with modern notification
-    document.getElementById('addToCart').addEventListener('click', function() {
-        const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
-        const idstr = 'pr{{ product.id }}';
-        cart[idstr] = [qty, '{{ product.product_name }}', unitPrice];
-        localStorage.setItem('cart', JSON.stringify(cart));
-        
-        // Update cart count
-        document.getElementById('cart').textContent = Object.keys(cart).length;
-        
-        // Show success notification
-        showNotification('Product added to cart successfully!', 'success');
-        
-        // Add button animation
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            this.style.transform = 'scale(1)';
-        }, 150);
-    });
-    
-    // Buy now button
-    document.getElementById('buyNow').addEventListener('click', function() {
-        // Add to cart first
-        const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
-        const idstr = 'pr{{ product.id }}';
-        cart[idstr] = [qty, '{{ product.product_name }}', unitPrice];
-        localStorage.setItem('cart', JSON.stringify(cart));
-        
-        // Redirect to checkout
-        window.location.href = '/shop/checkout/';
-    });
-    
-    // Initialize cart count
-    if (localStorage.getItem('cart')) {
-        const cart = JSON.parse(localStorage.getItem('cart'));
-        document.getElementById('cart').textContent = Object.keys(cart).length;
-    }
-    
-    // Initialize popover
-    const popoverTrigger = document.getElementById('popcart');
-    if (popoverTrigger) {
-        const popover = new bootstrap.Popover(popoverTrigger, {
-            content: '<h5>Cart for your items in my shopping cart</h5>',
-            html: true
-        });
-    }
-    
-    // Add loading animation to product details
-    const productDetails = document.querySelector('.product-details');
-    if (productDetails) {
-        productDetails.style.opacity = '0';
-        productDetails.style.transform = 'translateY(20px)';
-        
-        setTimeout(() => {
-            productDetails.style.transition = 'all 0.6s ease';
-            productDetails.style.opacity = '1';
-            productDetails.style.transform = 'translateY(0)';
-        }, 300);
+
+        // Update total price function
+        function updateTotal() {
+            const total = unitPrice * qty;
+            const totalPriceEl = document.getElementById('totalPrice');
+            const qtyEl = document.getElementById('qty');
+            if (totalPriceEl) totalPriceEl.textContent = '₹' + total.toLocaleString();
+            if (qtyEl) qtyEl.value = qty;
+        }
+
+        // Quantity controls with animations
+        const increaseBtn = document.getElementById('increaseQty');
+        const decreaseBtn = document.getElementById('decreaseQty');
+        if (increaseBtn) {
+            increaseBtn.addEventListener('click', function() {
+                qty += 1;
+                updateTotal();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => { this.style.transform = 'scale(1)'; }, 150);
+            });
+        }
+        if (decreaseBtn) {
+            decreaseBtn.addEventListener('click', function() {
+                if (qty > 1) {
+                    qty -= 1;
+                    updateTotal();
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => { this.style.transform = 'scale(1)'; }, 150);
+                }
+            });
+        }
+
+        // Add to cart with modern notification
+        const addToCartBtn = document.getElementById('addToCart');
+        if (addToCartBtn && typeof addToGlobalCart === 'function') {
+            addToCartBtn.addEventListener('click', function() {
+                addToGlobalCart({{ product.id }}, '{{ product.product_name }}', unitPrice, qty);
+                if (typeof showNotification === 'function') {
+                    showNotification('Product added to cart successfully!', 'success');
+                }
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => { this.style.transform = 'scale(1)'; }, 150);
+                try { console.log('Cart after adding:', localStorage.getItem('cart')); } catch (e) {}
+            });
+        } else if (addToCartBtn) {
+            // Fallback: try again after a delay
+            setTimeout(() => {
+                if (typeof addToGlobalCart === 'function') {
+                    addToCartBtn.addEventListener('click', function() {
+                        addToGlobalCart({{ product.id }}, '{{ product.product_name }}', unitPrice, qty);
+                        if (typeof showNotification === 'function') {
+                            showNotification('Product added to cart successfully!', 'success');
+                        }
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => { this.style.transform = 'scale(1)'; }, 150);
+                    });
+                }
+            }, 1000);
+        }
+
+        // Buy now button
+        const buyNowBtn = document.getElementById('buyNow');
+        if (buyNowBtn && typeof addToGlobalCart === 'function') {
+            buyNowBtn.addEventListener('click', function() {
+                addToGlobalCart({{ product.id }}, '{{ product.product_name }}', unitPrice, qty);
+                window.location.href = '/shop/checkout/';
+            });
+        }
+
+        // Cart functionality is now handled by the cart component
+        // No need for manual initialization
+
+        // Cart popover is now handled by the cart component
+
+        // Add loading animation to product details
+        const productDetails = document.querySelector('.product-details');
+        if (productDetails) {
+            productDetails.style.opacity = '0';
+            productDetails.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                productDetails.style.transition = 'all 0.6s ease';
+                productDetails.style.opacity = '1';
+                productDetails.style.transform = 'translateY(0)';
+            }, 300);
+        }
+    } catch (err) {
+        console.error('Error initializing product page scripts:', err);
     }
 });
 
@@ -721,15 +780,20 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Add image zoom functionality on double click
-document.getElementById('mainProductImage').addEventListener('dblclick', function() {
-    if (this.style.transform === 'scale(1.5)') {
-        this.style.transform = 'scale(1)';
-        this.style.cursor = 'zoom-in';
-    } else {
-        this.style.transform = 'scale(1.5)';
-        this.style.cursor = 'zoom-out';
+(() => {
+    const mainImg = document.getElementById('mainProductImage');
+    if (mainImg) {
+        mainImg.addEventListener('dblclick', function() {
+            if (this.style.transform === 'scale(1.5)') {
+                this.style.transform = 'scale(1)';
+                this.style.cursor = 'zoom-in';
+            } else {
+                this.style.transform = 'scale(1.5)';
+                this.style.cursor = 'zoom-out';
+            }
+        });
     }
-});
+})();
 
 // Add hover effect for action buttons
 document.querySelectorAll('.btn-add-cart, .btn-buy-now').forEach(btn => {

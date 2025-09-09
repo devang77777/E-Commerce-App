@@ -1,4 +1,5 @@
 {% extends 'shop/basic.html' %}
+{% load humanize %}
 {% block title %}Secure Payment - My Awesome Cart{% endblock %}
 
 {% block css %}
@@ -718,7 +719,7 @@
                 <div class="order-totals">
                     <div class="total-row">
                         <span class="total-label">Subtotal</span>
-                        <span class="total-value">₹<span id="subtotal">{{ amount|floatformat:2 }}</span></span>
+                        <span class="total-value">₹<span id="subtotal">{{ display_amount|intcomma }}</span></span>
                     </div>
                     <div class="total-row">
                         <span class="total-label">Shipping</span>
@@ -726,11 +727,11 @@
                     </div>
                     <div class="total-row">
                         <span class="total-label">Tax</span>
-                        <span class="total-value">₹0.00</span>
+                        <span class="total-value">₹0</span>
                     </div>
                     <div class="total-row">
                         <span class="total-label">Total Amount</span>
-                        <span class="total-value">₹<span id="totalAmount">{{ amount|floatformat:2 }}</span></span>
+                        <span class="total-value">₹<span id="totalAmount">{{ display_amount|intcomma }}</span></span>
                     </div>
                 </div>
             </div>
@@ -810,7 +811,7 @@
                 <!-- Payment Button -->
                 <button id="rzp-button" class="pay-button">
                     <i class="fas fa-credit-card me-2"></i>
-                    Pay Now - ₹{{ amount|floatformat:2 }}
+                    Pay Now - ₹{{ display_amount|intcomma }}
                 </button>
             </div>
         </div>

@@ -351,40 +351,14 @@
                     </button>
                     <input class="form-control search-input" type="search" placeholder="Search products..." name="search" id="search">
                 </form>
-                {% comment %} <li class="nav-item">
-    <a tabindex="0" class="nav-link position-relative" id="popcart" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="focus" title="Cart" data-bs-content="">
-        <i class="fas fa-shopping-cart"></i>
-        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle" id="cart">0</span>
-    </a>
-</li> {% endcomment %}
+
                 <!-- Cart Component -->
                 {% include 'shop/components/cart.html' %}
 
                 <!-- Dark Mode Toggle -->
-                <button class="btn dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode" style="margin-left: 15px;">
+                <button class="btn dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
                     <i class="fas fa-moon"></i>
                 </button>
-                <!-- filepath: d:\internship1\Minor Project\EECT\E-Commerce-App\shop\templates\shop\basic.html -->
-<!-- ...existing code... -->
-<ul class="navbar-nav ms-auto">
-    <!-- ...other nav items... -->
-    {% if user.is_authenticated %}
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user"></i> {{ user.username }}
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-            {% comment %} <li><a class="dropdown-item" href="#">Profile</a></li> {% endcomment %}
-            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-        </ul>
-    </li>
-    {% else %}
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Sign In</a>
-    </li>
-    {% endif %}
-</ul>
-<!-- ...existing code... -->
             </div>
         </div>
     </nav>

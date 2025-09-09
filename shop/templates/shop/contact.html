@@ -579,8 +579,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form submission
     form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
         // Validate all fields
         const fields = form.querySelectorAll('input[required], textarea[required]');
         let isFormValid = true;
@@ -596,27 +594,10 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.classList.add('loading');
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
             
-            // Simulate form submission (replace with actual submission)
-            setTimeout(() => {
-                // Show success message
-                showNotification('Thank you! We will contact you soon.', 'success');
-                
-                // Reset form
-                form.reset();
-                form.querySelectorAll('.form-control').forEach(field => {
-                    field.classList.remove('is-valid', 'is-invalid');
-                });
-                
-                // Reset button
-                submitBtn.classList.remove('loading');
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Send Message';
-                
-                // Redirect after a delay
-                setTimeout(() => {
-                    window.location.href = "/shop";
-                }, 2000);
-            }, 1500);
+            // Allow form to submit normally to Django
+            // The form will be processed by the Django view
         } else {
+            e.preventDefault();
             showNotification('Please fill in all required fields correctly.', 'danger');
         }
     });

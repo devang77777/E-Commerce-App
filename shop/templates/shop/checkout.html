@@ -664,8 +664,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <h4 class="empty-cart-title">Your cart is empty</h4>
                 <p class="empty-cart-text">Please add some items to your cart before checking out.</p>
-                <a href="/shop" class="shop-btn">
-                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                <a href="/shop" class="shop-btn" onclick="event.preventDefault(); try { localStorage.removeItem('cart'); } catch(e) { localStorage.clear(); } window.location.href='/shop';">
+                    <i class="fas fa-trash me-2"></i>Clear Cart
                 </a>
             </div>
         `;
@@ -926,7 +926,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle thank you message
 {% if thank %}
     showNotification('Thanks for ordering with us! Your order ID is {{id}}. Use it to track your order.', 'success');
-localStorage.clear();
+localStorage.removeItem('cart');
     setTimeout(() => {
         window.location.href = "/shop";
     }, 3000);

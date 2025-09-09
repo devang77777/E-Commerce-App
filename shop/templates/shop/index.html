@@ -254,11 +254,11 @@
 }
 
 .carousel-control-prev {
-    left: -25px;
+    left: -20px;
 }
 
 .carousel-control-next {
-    right: -25px;
+    right: -20px;
 }
 
 .carousel-control-prev:hover,
@@ -270,9 +270,9 @@
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-size: 50%;
+    {% comment %} background-size: 50%; {% endcomment %}
     width: 20px;
-    height: 20px;
+    {% comment %} height: 20px; {% endcomment %}
 }
 
 .carousel-indicators {
@@ -535,6 +535,9 @@
 let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
 updateCart(cart);
 
+// Initialize global cart
+updateGlobalCart();
+
 // Debug function to test cart functionality
 function debugCart() {
     console.log('Current cart:', cart);
@@ -566,6 +569,8 @@ document.querySelectorAll('.product-actions').forEach(function(div) {
                 cart[idstr] = [1, name, price];
             }
             updateCart(cart);
+            // Update global cart
+            updateGlobalCart();
             
             // Show success popup message
             showNotification('Item added to cart successfully!', 'success');
@@ -734,10 +739,7 @@ function updatePopover(cart) {
                             <i class="fas fa-credit-card me-1"></i>Proceed to Checkout
                         </a>
                         <div class="d-flex gap-2">
-                            <a href='/shop' class='btn btn-outline-primary btn-sm flex-fill'>
-                                <i class="fas fa-shopping-bag me-1"></i>Continue Shopping
-                            </a>
-                            <button class='btn btn-outline-danger btn-sm flex-fill' onclick='clearCart()'>
+                            <button class='btn btn-outline-danger btn-sm w-100' onclick='clearCart()'>
                                 <i class="fas fa-trash me-1"></i>Clear Cart
                             </button>
                         </div>
@@ -770,7 +772,11 @@ function clearCart() {
                     </button>
                 </a>`;
         }
-        localStorage.clear();
+        try {
+            localStorage.removeItem('cart');
+        } catch (e) {
+            localStorage.clear();
+        }
         cart = {};
         updateCart(cart);
         showNotification('Cart cleared successfully!', 'info');
@@ -852,6 +858,8 @@ document.addEventListener('click', function(e) {
                 showNotification('Quantity updated!', 'info');
             }
             updateCart(cart);
+            // Update global cart
+            updateGlobalCart();
         }
     }
     
@@ -874,6 +882,8 @@ document.addEventListener('click', function(e) {
             
             document.getElementById('val' + id).innerText = cart[id][0];
             updateCart(cart);
+            // Update global cart
+            updateGlobalCart();
             showNotification('Quantity increased!', 'success');
         }
     }

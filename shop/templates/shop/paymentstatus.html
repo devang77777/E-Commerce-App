@@ -288,8 +288,8 @@
                     <a href="/shop/tracker" class="btn-primary-modern">
                         <i class="fas fa-truck me-2"></i>Track Your Order
                     </a>
-                    <a href="/shop" class="btn-outline-modern">
-                        <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                    <a href="/shop" class="btn-outline-modern" onclick="event.preventDefault(); try { localStorage.removeItem('cart'); } catch(e) { localStorage.clear(); } window.location.href='/shop';">
+                        <i class="fas fa-trash me-2"></i>Clear Cart
                     </a>
                 </div>
         {% else %}
