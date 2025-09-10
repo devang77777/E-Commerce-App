@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Make Payment</title>
+    <style>
+        ul#cartItems { margin-bottom: 20px; }
+        ul#cartItems li { padding: 5px 0; }
+        #payBtn { padding: 10px 20px; background: green; color: white; border: none; cursor: pointer; }
+        .checkout-form { margin-top: 40px; padding: 20px; border: 1px solid #eee; border-radius: 8px; max-width: 500px; }
+        .checkout-form label { display: block; margin-top: 10px; }
+        .checkout-form input { width: 100%; padding: 8px; margin-top: 5px; }
+        .checkout-form button { margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h2>Review Your Cart & Make Payment</h2>
+    <h3>Your Cart</h3>
+    <ul id="cartItems"></ul>
+
+    <!-- Payment Button -->
+    <button id="payBtn">Proceed to Pay</button>
+
+    <!-- Razorpay script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+        var cartList = document.getElementById('cartItems');
+        var total = 0;
+        for (var key in cart) {
+            var item = cart[key];
+            var name = item[1];
+            var qty = item[0];
+            var price = item[2];
+            var desc = item[3] ? item[3] : '';
+            total += qty * price;
+            var li = document.createElement('li');
+            li.innerHTML = `<strong>Product:</strong> ${name}<br><strong>Description:</strong> ${desc}<br><strong>Price:</strong> ₹${price}<br><strong>Qty:</strong> ${qty}<br><strong>Subtotal:</strong> ₹${qty * price}`;
+            cartList.appendChild(li);
+        }
+        var totalLi = document.createElement('li');
+        totalLi.innerHTML = "<strong>Total: ₹" + total + "</strong>";
+        cartList.appendChild(totalLi);
+
+        // Handle Payment Button Click
+        document.getElementById('payBtn').onclick = function(e) {
+            e.preventDefault();
+            var options = {
+                "key": "rzp_test_RCJvByWdt5ePjg", // Replace with your Razorpay key_id
+                "amount": total * 100, // Amount in paise
+                "currency": "INR",
+                "name": "My Shop",
+                "description": "Test Transaction",
+                "image": "https://yourwebsite.com/logo.png",
+                "handler": function (response){
+                    alert("Payment Successful!\nPayment ID: " + response.razorpay_payment_id);
+                },
+                "prefill": {
+                    "name": "Customer Name",
+                    "email": "customer@example.com",
+                    "contact": "9876543210"
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        }
+    });
+    </script>
+
+    <!-- Checkout Form Below Payment Option -->
+    <div class="checkout-form">
+        <h3>Checkout Details</h3>
+        <form method="post" action="/shop/pay/">
+            {% csrf_token %}
+            <input type="hidden" name="itemsJson" id="itemsJson">
+            <input type="hidden" name="amount" id="amountInput">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Name" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            <label for="address1">Address</label>
+            <input type="text" id="address1" name="address1" placeholder="1234 Main St" required>
+            <label for="address2">Address line 2</label>
+            <input type="text" id="address2" name="address2" placeholder="Apartment, studio, or floor" required>
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" required>
+            <label for="state">State</label>
+            <input type="text" id="state" name="state" placeholder="Enter State" required>
+            <label for="zip_code">Zip</label>
+            <input type="text" id="zip_code" name="zip_code" required>
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required>
+            <button type="submit" class="btn btn-primary">Submit Order</button>
+        </form>
+    </div>
+    <script>
+    // Fill hidden fields for checkout form
+    document.addEventListener("DOMContentLoaded", function() {
+        var cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+        var total = 0;
+        for (var key in cart) {
+            var item = cart[key];
+            var qty = item[0];
+            var price = item[2];
+            total += qty * price;
+        }
+        document.getElementById('amountInput').value = total;
+        document.getElementById('itemsJson').value = JSON.stringify(cart);
+    });
+    </script>
+</body>
+</html>

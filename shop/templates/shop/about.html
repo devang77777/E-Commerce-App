@@ -1,0 +1,556 @@
+
+{% extends 'shop/basic.html' %}
+{% block title %}About Us - My Awesome Cart{% endblock %}
+
+{% block css %}
+<style>
+/* About Page Specific Styles */
+.about-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.about-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 1000,0 1000,100 0,80"/></svg>');
+    background-size: cover;
+}
+
+.about-hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.about-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.about-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    max-width: 600px;
+}
+
+.stats-section {
+    background: white;
+    padding: 4rem 0;
+    margin-top: -2rem;
+    position: relative;
+    z-index: 3;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+}
+
+.stat-card {
+    text-align: center;
+    padding: 2rem 1rem;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.stat-card:hover .stat-number {
+    color: white;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.stat-card:hover .stat-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.about-content {
+    padding: 5rem 0;
+}
+
+.content-section {
+    margin-bottom: 4rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+}
+
+.section-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.feature-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.team-section {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    padding: 5rem 0;
+}
+
+.team-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.team-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.team-avatar {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.team-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.team-role {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.team-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.cta-section {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    padding: 5rem 0;
+    text-align: center;
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.cta-btn {
+    background: white;
+    color: var(--primary-color);
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-title {
+        font-size: 2.5rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+    }
+    
+    .feature-card,
+    .team-card {
+        margin-bottom: 2rem;
+    }
+    
+    .about-hero {
+        padding: 4rem 0 3rem;
+    }
+    
+    .stats-section {
+        padding: 3rem 0;
+    }
+}
+
+/* Dark Mode Support */
+.dark-mode .stats-section {
+    background: #1f2937;
+}
+
+.dark-mode .stat-card {
+    background: linear-gradient(135deg, #374151, #4b5563);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.dark-mode .feature-card,
+.dark-mode .team-card {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .team-section {
+    background: linear-gradient(135deg, #111827, #1f2937);
+}
+
+.dark-mode .section-title,
+.dark-mode .feature-title,
+.dark-mode .team-name {
+    color: white;
+}
+
+.dark-mode .section-text,
+.dark-mode .feature-description,
+.dark-mode .team-description {
+    color: #d1d5db;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="about-hero-content">
+                    <h1 class="about-title">About My Awesome Cart</h1>
+                    <p class="about-subtitle">
+                        We're passionate about bringing you the best shopping experience with quality products, 
+                        competitive prices, and exceptional customer service. Since our founding, we've been 
+                        committed to making online shopping simple, secure, and enjoyable.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="text-center">
+                    <i class="fas fa-store" style="font-size: 8rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-number">5K+</div>
+                    <div class="stat-label">Products Sold</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">Customer Satisfaction</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Customer Support</div>
+                </div>
+            </div>
+    </div>
+  </div>
+</section>
+
+<!-- About Content -->
+<section class="about-content">
+  <div class="container">
+    <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="content-section">
+                    <h2 class="section-title">Our Story</h2>
+                    <p class="section-text">
+                        My Awesome Cart was founded with a simple mission: to make online shopping accessible, 
+                        convenient, and enjoyable for everyone. We started as a small team of passionate 
+                        individuals who believed that shopping should be more than just a transaction – it 
+                        should be an experience.
+                    </p>
+                    <p class="section-text">
+                        Over the years, we've grown from a small startup to a trusted e-commerce platform, 
+                        serving thousands of customers across the country. Our success is built on the 
+                        foundation of quality products, competitive pricing, and exceptional customer service.
+                    </p>
+      </div>
+      </div>
+      </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="section-title">What Makes Us Different</h2>
+                <p class="section-text">
+                    We're committed to providing you with the best shopping experience through our unique features and services.
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Secure Shopping</h3>
+                    <p class="feature-description">
+                        Your security is our priority. We use industry-standard encryption and secure payment 
+                        gateways to protect your personal and financial information.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h3 class="feature-title">Fast Delivery</h3>
+                    <p class="feature-description">
+                        We understand that you want your products quickly. That's why we offer express delivery 
+                        options and work with reliable shipping partners.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <h3 class="feature-title">Easy Returns</h3>
+                    <p class="feature-description">
+                        Not satisfied with your purchase? No problem! We offer hassle-free returns within 30 days 
+                        of purchase with full refund guarantee.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3 class="feature-title">24/7 Support</h3>
+                    <p class="feature-description">
+                        Our dedicated customer support team is available round the clock to help you with any 
+                        questions or concerns you may have.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3 class="feature-title">Quality Products</h3>
+                    <p class="feature-description">
+                        We carefully curate our product selection to ensure that every item meets our high 
+                        standards for quality and value.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3 class="feature-title">Best Prices</h3>
+                    <p class="feature-description">
+                        We work directly with manufacturers and suppliers to bring you the best prices without 
+                        compromising on quality.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="section-title">Meet Our Team</h2>
+                <p class="section-text">
+                    Behind My Awesome Cart is a team of dedicated professionals who work tirelessly to bring you the best shopping experience.
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="team-card">
+                    <div class="team-avatar">JD</div>
+                    <h4 class="team-name">John Doe</h4>
+                    <p class="team-role">Founder & CEO</p>
+                    <p class="team-description">
+                        Passionate about e-commerce and customer satisfaction. John leads our team with 
+                        vision and dedication to excellence.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="team-card">
+                    <div class="team-avatar">JS</div>
+                    <h4 class="team-name">Jane Smith</h4>
+                    <p class="team-role">Head of Operations</p>
+                    <p class="team-description">
+                        Ensures smooth operations and maintains our high standards for product quality 
+                        and customer service.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="team-card">
+                    <div class="team-avatar">MJ</div>
+                    <h4 class="team-name">Mike Johnson</h4>
+                    <p class="team-role">Customer Success Manager</p>
+                    <p class="team-description">
+                        Dedicated to ensuring every customer has an amazing experience with our platform 
+                        and services.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="cta-title">Ready to Start Shopping?</h2>
+                <p class="cta-subtitle">
+                    Join thousands of satisfied customers and discover amazing products at unbeatable prices.
+                </p>
+                <a href="/shop" class="cta-btn">
+                    <i class="fas fa-shopping-bag me-2"></i>Start Shopping Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

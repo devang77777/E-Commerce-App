@@ -1,0 +1,1160 @@
+{% extends 'shop/basic.html' %}
+{% load humanize %}
+{% block title %}Secure Payment - My Awesome Cart{% endblock %}
+
+{% block css %}
+<style>
+:root {
+    --primary-color: #6366f1;
+    --primary-dark: #4f46e5;
+    --accent-color: #10b981;
+    --success-color: #059669;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+    --border-radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Payment Hero Section */
+.payment-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 1000,0 1000,100 0,80"/></svg>');
+    background-size: cover;
+}
+
+.payment-hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.payment-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    background: linear-gradient(45deg, #ffffff, #f0f9ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.payment-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+/* Progress Indicator */
+.progress-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    transition: var(--transition);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.step-number.active {
+    background: linear-gradient(135deg, var(--accent-color), var(--success-color));
+    border-color: var(--accent-color);
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.step-number.completed {
+    background: linear-gradient(135deg, var(--success-color), #047857);
+    border-color: var(--success-color);
+}
+
+.step-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+}
+
+.step-label.active {
+    color: white;
+    font-weight: 700;
+}
+
+.progress-line {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 1;
+    border-radius: 2px;
+}
+
+.progress-line-fill {
+    height: 100%;
+    background: linear-gradient(135deg, var(--accent-color), var(--success-color));
+    width: 100%;
+    transition: width 0.8s ease;
+    border-radius: 2px;
+}
+
+/* Payment Content */
+.payment-content {
+    padding: 3rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 60vh;
+}
+
+.payment-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 3rem;
+    align-items: start;
+}
+
+/* Order Summary Card */
+.order-summary {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(0,0,0,0.05);
+    position: sticky;
+    top: 2rem;
+}
+
+.summary-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.summary-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.summary-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.order-items {
+    margin-bottom: 2rem;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+}
+
+.order-item:hover {
+    background: #f1f5f9;
+    transform: translateY(-2px);
+}
+
+.item-image {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.item-price {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.item-quantity {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.order-totals {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.total-row:last-child {
+    border-bottom: none;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+    border-top: 2px solid rgba(14, 165, 233, 0.2);
+}
+
+.total-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.total-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Payment Methods */
+.payment-methods {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.payment-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.payment-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--accent-color), var(--success-color));
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.payment-title-main {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.payment-description {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Payment Options */
+.payment-options {
+    margin-bottom: 2rem;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.payment-option:hover {
+    background: #f1f5f9;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.payment-option.selected {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+}
+
+.payment-option-icon {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.payment-option-details {
+    flex: 1;
+}
+
+.payment-option-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.payment-option-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.payment-option-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    position: relative;
+    transition: var(--transition);
+}
+
+.payment-option.selected .payment-option-radio {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+}
+
+.payment-option.selected .payment-option-radio::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+/* Security Features */
+.security-features {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(34, 197, 94, 0.1);
+}
+
+.security-title {
+    font-weight: 600;
+    color: var(--success-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.security-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.security-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.security-item i {
+    color: var(--success-color);
+    font-size: 0.8rem;
+}
+
+/* Payment Button */
+.pay-button {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    width: 100%;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pay-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+.pay-button:active {
+    transform: translateY(-1px);
+}
+
+.pay-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.pay-button:hover::before {
+    left: 100%;
+}
+
+.pay-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.pay-button.loading {
+    pointer-events: none;
+}
+
+.pay-button.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border: 3px solid transparent;
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Loading States */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: var(--shadow-xl);
+    max-width: 400px;
+    width: 90%;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1.5rem;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.loading-subtext {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .payment-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .order-summary {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .payment-title {
+        font-size: 2.5rem;
+    }
+    
+    .payment-grid {
+        gap: 1.5rem;
+    }
+    
+    .order-summary,
+    .payment-methods {
+        padding: 2rem;
+    }
+    
+    .progress-steps {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .progress-line {
+        display: none;
+    }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        font-size: 1rem;
+    }
+}
+
+/* Dark Mode Support */
+.dark-mode .payment-content {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+}
+
+.dark-mode .order-summary,
+.dark-mode .payment-methods {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .summary-title,
+.dark-mode .payment-title-main {
+    color: white;
+}
+
+.dark-mode .payment-description,
+.dark-mode .total-label,
+.dark-mode .payment-option-description {
+    color: #d1d5db;
+}
+
+.dark-mode .order-item,
+.dark-mode .payment-option {
+    background: #374151;
+}
+
+.dark-mode .order-item:hover,
+.dark-mode .payment-option:hover {
+    background: #4b5563;
+}
+
+.dark-mode .order-totals {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark-mode .security-features {
+    background: linear-gradient(135deg, #064e3b, #065f46);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.dark-mode .loading-content {
+    background: #1f2937;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Payment Hero -->
+<section class="payment-hero">
+    <div class="container">
+        <div class="payment-hero-content text-center">
+            <h1 class="payment-title">
+                <i class="fas fa-credit-card me-3"></i>Secure Payment
+            </h1>
+            <p class="payment-subtitle">Complete your purchase with our secure payment gateway</p>
+        </div>
+        
+        <!-- Progress Steps -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-step">
+                    <div class="step-number completed">1</div>
+                    <div class="step-label">Review Cart</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number completed">2</div>
+                    <div class="step-label">Shipping Details</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number active">3</div>
+                    <div class="step-label">Payment</div>
+                </div>
+                <div class="progress-line">
+                    <div class="progress-line-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Payment Content -->
+<section class="payment-content">
+    <div class="container">
+        <div class="payment-grid">
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <div class="summary-header">
+                    <div class="summary-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <h3 class="summary-title">Order Summary</h3>
+                </div>
+                
+                <div class="order-items" id="orderItems">
+                    <!-- Order items will be populated here -->
+                </div>
+                
+                <div class="order-totals">
+                    <div class="total-row">
+                        <span class="total-label">Subtotal</span>
+                        <span class="total-value">₹<span id="subtotal">{{ display_amount|intcomma }}</span></span>
+                    </div>
+                    <div class="total-row">
+                        <span class="total-label">Shipping</span>
+                        <span class="total-value text-success">FREE</span>
+                    </div>
+                    <div class="total-row">
+                        <span class="total-label">Tax</span>
+                        <span class="total-value">₹0</span>
+                    </div>
+                    <div class="total-row">
+                        <span class="total-label">Total Amount</span>
+                        <span class="total-value">₹<span id="totalAmount">{{ display_amount|intcomma }}</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Methods -->
+            <div class="payment-methods">
+                <div class="payment-header">
+                    <div class="payment-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h2 class="payment-title-main">Choose Payment Method</h2>
+                    <p class="payment-description">Select your preferred payment method to complete your order securely.</p>
+                </div>
+                
+                <!-- Payment Options -->
+                <div class="payment-options">
+                    <div class="payment-option selected" data-method="razorpay">
+                        <div class="payment-option-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="payment-option-details">
+                            <div class="payment-option-name">Credit/Debit Card</div>
+                            <div class="payment-option-description">Pay with Visa, Mastercard, or other cards</div>
+                        </div>
+                        <div class="payment-option-radio"></div>
+                    </div>
+                    
+                    <div class="payment-option" data-method="upi">
+                        <div class="payment-option-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="payment-option-details">
+                            <div class="payment-option-name">UPI Payment</div>
+                            <div class="payment-option-description">Pay using UPI apps like GPay, PhonePe</div>
+                        </div>
+                        <div class="payment-option-radio"></div>
+                    </div>
+                    
+                    <div class="payment-option" data-method="netbanking">
+                        <div class="payment-option-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="payment-option-details">
+                            <div class="payment-option-name">Net Banking</div>
+                            <div class="payment-option-description">Pay directly from your bank account</div>
+                        </div>
+                        <div class="payment-option-radio"></div>
+                    </div>
+                </div>
+                
+                <!-- Security Features -->
+                <div class="security-features">
+                    <div class="security-title">
+                        <i class="fas fa-lock"></i>
+                        Secure Payment Guarantee
+                    </div>
+                    <ul class="security-list">
+                        <li class="security-item">
+                            <i class="fas fa-check"></i>
+                            SSL encrypted secure connection
+                        </li>
+                        <li class="security-item">
+                            <i class="fas fa-check"></i>
+                            PCI DSS compliant payment processing
+                        </li>
+                        <li class="security-item">
+                            <i class="fas fa-check"></i>
+                            Your card details are never stored
+                        </li>
+                        <li class="security-item">
+                            <i class="fas fa-check"></i>
+                            256-bit encryption for all transactions
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Payment Button -->
+                <button id="rzp-button" class="pay-button">
+                    <i class="fas fa-credit-card me-2"></i>
+                    Pay Now - ₹{{ display_amount|intcomma }}
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Processing Payment</div>
+        <div class="loading-subtext">Please wait while we process your payment securely...</div>
+    </div>
+</div>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load cart from localStorage and populate order items
+    let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+    const orderItemsContainer = document.getElementById('orderItems');
+    let totalAmount = 0;
+    
+    // Populate order items
+    if (Object.keys(cart).length > 0) {
+        for (let item in cart) {
+            let name = cart[item][1];
+            let qty = cart[item][0];
+            let itemPrice = cart[item][2];
+            let itemTotal = qty * itemPrice;
+            totalAmount += itemTotal;
+            
+            const orderItem = document.createElement('div');
+            orderItem.className = 'order-item';
+            orderItem.innerHTML = `
+                <div class="item-image">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="item-details">
+                    <div class="item-name">${name}</div>
+                    <div class="item-price">₹${itemPrice.toLocaleString()} each</div>
+                </div>
+                <div class="item-quantity">Qty: ${qty}</div>
+            `;
+            orderItemsContainer.appendChild(orderItem);
+        }
+    }
+    
+    // Update totals
+    document.getElementById('subtotal').textContent = totalAmount.toLocaleString();
+    document.getElementById('totalAmount').textContent = totalAmount.toLocaleString();
+    
+    // Payment method selection
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    paymentOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            paymentOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+    
+    // Razorpay configuration
+    const payBtn = document.getElementById('rzp-button');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    
+    var options = {
+        "key": "{{ razorpay_key }}",
+        "amount": "{{ amount }}",
+        "currency": "{{ currency }}",
+        "name": "My Awesome Cart",
+        "description": "Order Payment",
+        "order_id": "{{ order_id }}",
+        "image": "https://via.placeholder.com/150x50/6366f1/ffffff?text=My+Awesome+Cart",
+        "handler": function (response) {
+            // Show success message with order number
+            showSuccessMessage(response.razorpay_payment_id, response.razorpay_order_id);
+            
+            // Clear cart and form data
+            localStorage.removeItem('cart');
+            localStorage.removeItem('checkoutFormData');
+            
+            // Update global cart count
+            if (typeof updateGlobalCart === 'function') {
+                updateGlobalCart();
+            }
+        },
+        "modal": {
+            "ondismiss": function() {
+                showNotification('Payment cancelled by user', 'warning');
+                hideLoading();
+            }
+        },
+        "theme": {
+            "color": "#6366f1"
+        },
+        "prefill": {
+            "name": "{{ user.get_full_name|default:user.username }}",
+            "email": "{{ user.email }}",
+            "contact": ""
+        },
+        "notes": {
+            "order_id": "{{ order_id }}"
+        }
+    };
+    
+    var rzp1 = new Razorpay(options);
+    
+    // Payment button click handler
+    payBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const selectedMethod = document.querySelector('.payment-option.selected').dataset.method;
+        
+        if (selectedMethod === 'razorpay') {
+            showLoading();
+            rzp1.open();
+        } else {
+            showNotification('This payment method is coming soon!', 'info');
+        }
+    });
+    
+    // Loading functions
+    function showLoading() {
+        loadingOverlay.style.display = 'flex';
+        payBtn.classList.add('loading');
+        payBtn.disabled = true;
+    }
+    
+    function hideLoading() {
+        loadingOverlay.style.display = 'none';
+        payBtn.classList.remove('loading');
+        payBtn.disabled = false;
+    }
+    
+    // Success message function with order details
+    function showSuccessMessage(paymentId, orderId) {
+        // Create success modal overlay
+        const successOverlay = document.createElement('div');
+        successOverlay.className = 'success-overlay';
+        successOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        `;
+        
+        successOverlay.innerHTML = `
+            <div class="success-content" style="
+                background: white;
+                border-radius: 24px;
+                padding: 3rem;
+                text-align: center;
+                box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+                max-width: 500px;
+                width: 90%;
+                animation: slideUp 0.5s ease;
+            ">
+                <div class="success-icon" style="
+                    width: 100px;
+                    height: 100px;
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 2rem;
+                    color: white;
+                    font-size: 3rem;
+                    animation: bounce 0.6s ease;
+                ">
+                    <i class="fas fa-check"></i>
+                </div>
+                
+                <h2 style="
+                    font-size: 2rem;
+                    font-weight: 700;
+                    color: #1f2937;
+                    margin-bottom: 1rem;
+                ">Payment Successful!</h2>
+                
+                <p style="
+                    color: #6b7280;
+                    font-size: 1.1rem;
+                    margin-bottom: 2rem;
+                    line-height: 1.6;
+                ">Thank you for your purchase! Your order has been confirmed and will be processed shortly.</p>
+                
+                <div class="order-details" style="
+                    background: #f8fafc;
+                    border-radius: 16px;
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                    text-align: left;
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <span style="color: #6b7280; font-weight: 500;">Order Number:</span>
+                        <span style="color: #1f2937; font-weight: 700; font-size: 1.1rem;">#${orderId}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <span style="color: #6b7280; font-weight: 500;">Payment ID:</span>
+                        <span style="color: #1f2937; font-weight: 600;">${paymentId}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #6b7280; font-weight: 500;">Amount Paid:</span>
+                        <span style="color: #10b981; font-weight: 700; font-size: 1.2rem;">₹${totalAmount.toLocaleString()}</span>
+                    </div>
+                </div>
+                
+                <div class="success-actions" style="display: flex; gap: 1rem; justify-content: center;">
+                    <button onclick="redirectToHome()" style="
+                        background: linear-gradient(135deg, #6366f1, #4f46e5);
+                        border: none;
+                        border-radius: 12px;
+                        padding: 1rem 2rem;
+                        color: white;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <i class="fas fa-home me-2"></i>Go to Home
+                    </button>
+                    <button onclick="redirectToOrders()" style="
+                        background: transparent;
+                        border: 2px solid #6366f1;
+                        border-radius: 12px;
+                        padding: 1rem 2rem;
+                        color: #6366f1;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='#6366f1'; this.style.color='white'" onmouseout="this.style.background='transparent'; this.style.color='#6366f1'">
+                        <i class="fas fa-shopping-bag me-2"></i>View Orders
+                    </button>
+                </div>
+                
+                <p style="
+                    color: #9ca3af;
+                    font-size: 0.9rem;
+                    margin-top: 1.5rem;
+                ">You will be redirected to the home page in <span id="countdown">5</span> seconds</p>
+            </div>
+        `;
+        
+        document.body.appendChild(successOverlay);
+        
+        // Countdown timer
+        let countdown = 5;
+        const countdownElement = document.getElementById('countdown');
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                redirectToHome();
+            }
+        }, 1000);
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(50px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            @keyframes bounce {
+                0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+                40% { transform: translateY(-10px); }
+                60% { transform: translateY(-5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Redirect functions
+    function redirectToHome() {
+        window.location.href = '/shop/';
+    }
+    
+    function redirectToOrders() {
+        window.location.href = '/shop/tracker/';
+    }
+    
+    // Notification function
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 120px; right: 20px; z-index: 10000; min-width: 350px; max-width: 500px;';
+        notification.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                <span>${message}</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    
+    // Add animation to order items
+    const orderItems = document.querySelectorAll('.order-item');
+    orderItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            item.style.transition = 'all 0.6s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+    
+    // Add pulse animation to payment button
+    setInterval(() => {
+        if (!payBtn.disabled) {
+            payBtn.style.boxShadow = '0 8px 25px rgba(99, 102, 241, 0.3)';
+            setTimeout(() => {
+                payBtn.style.boxShadow = '0 12px 35px rgba(99, 102, 241, 0.4)';
+            }, 1000);
+        }
+    }, 2000);
+});
+</script>
+{% endblock %}

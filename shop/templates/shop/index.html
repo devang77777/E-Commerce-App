@@ -1,0 +1,659 @@
+{% extends 'shop/basic.html' %}
+{% block title %}MyAwesomeCart - Best Ecommerce Website{% endblock %}
+
+{% block css %}
+<style>
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 1000,0 1000,100 0,80"/></svg>');
+    background-size: cover;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.hero-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.hero-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    color: white;
+}
+
+/* Section Headers */
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+}
+
+.section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Modern Card Styles */
+.product-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    background: white;
+    position: relative;
+    height: 100%;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover::before {
+    transform: scaleX(1);
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.product-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    padding: 1rem;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-body {
+    padding: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100% - 250px);
+}
+
+.product-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    min-height: 2.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    min-height: 3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Modern Buttons */
+.btn-modern {
+    border-radius: 25px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary-modern {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+.btn-outline-modern {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline-modern:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Carousel Enhancements */
+.carousel-container {
+    position: relative;
+    padding: 0 2rem;
+    margin: 2rem 0;
+}
+
+.carousel {
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.9;
+    z-index: 10;
+    border: none;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+}
+
+.carousel-control-prev {
+    left: -20px;
+}
+
+.carousel-control-next {
+    right: -20px;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    {% comment %} background-size: 50%; {% endcomment %}
+    width: 20px;
+    {% comment %} height: 20px; {% endcomment %}
+}
+
+.carousel-indicators {
+    bottom: -50px;
+}
+
+.carousel-indicators [data-bs-target] {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #d1d5db;
+    border: none;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.carousel-indicators .active {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    transform: scale(1.2);
+}
+
+/* Category Badge */
+.category-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, var(--accent-color), #059669);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 5;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Loading Animation */
+.loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .carousel-container {
+        padding: 0 1rem;
+    }
+    
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .carousel-control-prev {
+        left: -20px;
+    }
+    
+    .carousel-control-next {
+        right: -20px;
+    }
+    
+    .product-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-modern {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+/* Dark Mode Support */
+.dark-mode .product-card {
+    background: #1f2937;
+    color: white;
+}
+
+.dark-mode .product-title {
+    color: white;
+}
+
+.dark-mode .product-description {
+    color: #d1d5db;
+}
+
+.dark-mode .section-title {
+    color: white;
+}
+
+.dark-mode .section-subtitle {
+    color: #d1d5db;
+}
+</style>
+{% endblock %}
+
+
+{% block body %}
+{% load static %}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="hero-title">Discover Amazing Products</h1>
+                    <p class="hero-subtitle">Shop the latest trends with unbeatable prices and fast delivery. Your perfect shopping experience starts here.</p>
+                    <a href="#products" class="hero-btn">
+                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="fas fa-shopping-cart" style="font-size: 8rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section id="products" class="py-5">
+    <div class="container">
+        {% for product, range, nSlides in allProds %}
+        <div class="section-header">
+            <h2 class="section-title" style="color: #000000;">
+                
+                Flash Sale on {{ product.0.category }}
+            </h2>
+            {% comment %} <p class="section-subtitle">Discover our handpicked selection of {{ product.0.category }} with exclusive discounts</p> {% endcomment %}
+        </div>
+        
+        <div class="carousel-container">
+            <div id="carousel{{ forloop.counter }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row g-4">
+                            {% for i in product %}
+                            <div class="col-lg-3 col-md-4 col-sm-6">
+                                <div class="product-card">
+                                    <div class="category-badge">
+                                        {{ i.category }}
+                                    </div>
+                                    <img src="/media/{{ i.image }}" class="product-image" alt="{{ i.product_name }}">
+                                    <div class="product-body">
+                                        <h5 class="product-title" id="namepr{{ i.id }}">{{ i.product_name }}</h5>
+                                        <p class="product-description">{{ i.desc|slice:"0:80" }}...</p>
+                                        <div class="product-price">
+                                            <i class="fas fa-rupee-sign me-1"></i>
+                                            <span id="pricepr{{ i.id }}">{{ i.price }}</span>
+                                        </div>
+                                        <div class="product-actions" id="divpr{{ i.id }}">
+                                            <button id="pr{{ i.id }}" class="btn btn-modern btn-primary-modern cart">
+                                                <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                                            </button>
+                                            <a href="/shop/products/{{ i.id }}">
+                                                <button class="btn btn-modern btn-outline-modern">
+                                                    <i class="fas fa-eye me-1"></i>Quick View
+                                                </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if forloop.counter|divisibleby:4 and not forloop.last %}
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row g-4">
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carousel Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Why Choose Us?</h2>
+            <p class="section-subtitle">Experience the best in online shopping with our premium services</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-shipping-fast" style="font-size: 3rem; color: var(--accent-color);"></i>
+                    </div>
+                    <h5 class="fw-bold">Fast Delivery</h5>
+                    <p class="text-muted">Get your orders delivered within 24-48 hours with our express shipping service.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-shield-alt" style="font-size: 3rem; color: var(--primary-color);"></i>
+                    </div>
+                    <h5 class="fw-bold">Secure Payment</h5>
+                    <p class="text-muted">Shop with confidence using our secure payment gateway with 256-bit SSL encryption.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-undo" style="font-size: 3rem; color: var(--accent-color);"></i>
+                    </div>
+                    <h5 class="fw-bold">Easy Returns</h5>
+                    <p class="text-muted">Not satisfied? Return any item within 30 days for a full refund, no questions asked.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-headset" style="font-size: 3rem; color: var(--primary-color);"></i>
+                    </div>
+                    <h5 class="fw-bold">24/7 Support</h5>
+                    <p class="text-muted">Our customer support team is available round the clock to help you with any queries.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+<script>
+// Ensure global cart UI is in sync on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.refreshGlobalCart) {
+        refreshGlobalCart();
+    }
+});
+
+// Show toast-like notification
+function showNotification(message, type = 'info') {
+    const existing = document.querySelectorAll('.cart-notification');
+    existing.forEach(n => n.remove());
+    const el = document.createElement('div');
+    el.className = `alert alert-${type} alert-dismissible fade show position-fixed cart-notification`;
+    el.style.cssText = 'top: 120px; right: 20px; z-index: 9999; min-width: 320px; max-width: 400px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border: none;';
+    el.innerHTML = `<div class="d-flex align-items-center"><i class="fas fa-${type === 'success' ? 'check-circle' : type === 'info' ? 'info-circle' : 'exclamation-circle'} me-3"></i><div class="flex-grow-1"><strong>${message}</strong></div><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
+    document.body.appendChild(el);
+    setTimeout(() => { if (el.parentNode) el.remove(); }, 3000);
+}
+
+// Helper: set local product card UI based on current quantity
+function setProductCardQuantity(idstr, quantity) {
+    const container = document.getElementById('div' + idstr);
+    if (!container) return;
+    if (quantity > 0) {
+        container.innerHTML = `
+            <div class="quantity-controls d-flex align-items-center justify-content-center gap-2">
+                <button id="minus${idstr}" class="btn btn-sm btn-outline-danger minus" type="button">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <span id="val${idstr}" class="fw-bold px-2">${quantity}</span>
+                <button id="plus${idstr}" class="btn btn-sm btn-outline-success plus" type="button">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>`;
+    } else {
+        const productId = idstr.replace('pr', '');
+        container.innerHTML = `
+            <button id="${idstr}" class="btn btn-modern btn-primary-modern cart">
+                <i class="fas fa-cart-plus me-1"></i>Add to Cart
+            </button>
+            <a href="/shop/products/${productId}">
+                <button class="btn btn-modern btn-outline-modern">
+                    <i class="fas fa-eye me-1"></i>Quick View
+                </button>
+            </a>`;
+    }
+}
+
+// Add to Cart from product grid (delegated)
+document.querySelectorAll('.product-actions').forEach(function(div) {
+    div.addEventListener('click', function(e) {
+        if (e.target.classList.contains('cart') || e.target.closest('.cart')) {
+            const button = e.target.classList.contains('cart') ? e.target : e.target.closest('.cart');
+            const idstr = button.id; // like pr12
+            const productId = idstr.replace('pr', '');
+            const nameEl = document.getElementById('name' + idstr);
+            const priceEl = document.getElementById('price' + idstr);
+            const productName = nameEl ? nameEl.innerText : '';
+            const price = priceEl ? parseInt(priceEl.innerText) : 0;
+
+            // Button tap animation
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => { button.style.transform = 'scale(1)'; }, 150);
+
+            if (window.addToGlobalCart) {
+                addToGlobalCart(productId, productName, price, 1);
+            }
+
+            // Reflect in local card UI
+            const cartNow = (window.getGlobalCart ? getGlobalCart() : {});
+            const qty = cartNow[idstr] ? cartNow[idstr][0] : 1;
+            setProductCardQuantity(idstr, qty);
+
+            showNotification('Item added to cart successfully!', 'success');
+        }
+    });
+});
+
+// Handle quantity +/- buttons (delegated)
+document.addEventListener('click', function(e) {
+    const target = e.target;
+    const minusBtn = target.closest('.minus');
+    const plusBtn = target.closest('.plus');
+
+    if (minusBtn && minusBtn.id.startsWith('minus')) {
+        const idstr = minusBtn.id.slice(5); // remove 'minus'
+        const productId = idstr.replace('pr', '');
+        const cartNow = (window.getGlobalCart ? getGlobalCart() : {});
+        const currentQty = cartNow[idstr] ? cartNow[idstr][0] : 0;
+        const newQty = Math.max(currentQty - 1, 0);
+        if (window.updateGlobalCartItem) {
+            updateGlobalCartItem(productId, newQty);
+        }
+        setProductCardQuantity(idstr, newQty);
+        showNotification(newQty === 0 ? 'Item removed from cart!' : 'Quantity updated!', newQty === 0 ? 'info' : 'success');
+    }
+
+    if (plusBtn && plusBtn.id.startsWith('plus')) {
+        const idstr = plusBtn.id.slice(4); // remove 'plus'
+        const productId = idstr.replace('pr', '');
+        const cartNow = (window.getGlobalCart ? getGlobalCart() : {});
+        const currentQty = cartNow[idstr] ? cartNow[idstr][0] : 0;
+        const newQty = currentQty + 1;
+        if (window.updateGlobalCartItem) {
+            updateGlobalCartItem(productId, newQty);
+        }
+        setProductCardQuantity(idstr, newQty);
+        showNotification('Quantity increased!', 'success');
+    }
+});
+
+// Extra styles for popover and notifications on this page
+(function addIndexExtrasStyles(){
+    const style = document.createElement('style');
+    style.textContent = `
+        .cart-popover { min-width: 350px; max-width: 400px; font-family: 'Inter', sans-serif; }
+        .cart-items { max-height: 300px; overflow-y: auto; padding-right: 5px; }
+        .cart-item { background: #f8f9fa; border: 1px solid #e9ecef !important; transition: all 0.3s ease; }
+        .cart-item:hover { background: #e9ecef; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .cart-summary { background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 1.5rem; border-radius: 12px; border: 1px solid #dee2e6; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .quantity-controls { background: #f8f9fa; border-radius: 20px; padding: 0.5rem; }
+    `;
+    document.head.appendChild(style);
+})();
+</script>
+{% endblock %}

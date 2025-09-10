@@ -1,0 +1,669 @@
+{% extends 'shop/basic.html' %}
+{% block title%} Order Tracker - My Awesome Cart{% endblock %}
+
+{% block css %}
+<style>
+/* Tracker Page Specific Styles */
+.tracker-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.tracker-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 1000,0 1000,100 0,80"/></svg>');
+    background-size: cover;
+}
+
+.tracker-hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.tracker-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.tracker-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.tracker-content {
+    padding: 3rem 0;
+    background: #f8fafc;
+}
+
+.tracker-form-container {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.form-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: white;
+    outline: none;
+}
+
+.track-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    width: 100%;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.track-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+}
+
+.track-btn.loading {
+    pointer-events: none;
+}
+
+.track-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.results-container {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.results-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.status-timeline::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e5e7eb;
+}
+
+.status-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}
+
+.status-item::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 0.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px #e5e7eb;
+}
+
+.status-item.completed::before {
+    background: var(--accent-color);
+    box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+.status-item.active::before {
+    background: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+
+.status-content {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border-left: 4px solid #e5e7eb;
+}
+
+.status-item.completed .status-content {
+    border-left-color: var(--accent-color);
+    background: #f0fdf4;
+}
+
+.status-item.active .status-content {
+    border-left-color: var(--primary-color);
+    background: #f0f9ff;
+}
+
+.status-text {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.status-time {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.order-details {
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.item-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.item-quantity {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.no-results-icon {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+}
+
+.no-results-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.no-results-text {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tracker-title {
+        font-size: 2rem;
+    }
+    
+    .tracker-form-container,
+    .results-container {
+        padding: 2rem;
+    }
+    
+    .status-timeline {
+        padding-left: 1.5rem;
+    }
+    
+    .status-item {
+        padding-left: 1.5rem;
+    }
+    
+    .status-item::before {
+        left: -1.25rem;
+    }
+}
+
+/* Dark Mode Support */
+.dark-mode .tracker-content {
+    background: #111827;
+}
+
+.dark-mode .tracker-form-container,
+.dark-mode .results-container,
+.dark-mode .no-results {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .form-control {
+    background: #374151;
+    border-color: #4b5563;
+    color: white;
+}
+
+.dark-mode .form-control:focus {
+    background: #4b5563;
+    border-color: var(--primary-color);
+}
+
+.dark-mode .form-label,
+.dark-mode .form-title,
+.dark-mode .results-title,
+.dark-mode .no-results-title {
+    color: white;
+}
+
+.dark-mode .form-subtitle,
+.dark-mode .no-results-text {
+    color: #d1d5db;
+}
+
+.dark-mode .status-content {
+    background: #374151;
+}
+
+.dark-mode .status-item.completed .status-content {
+    background: #14532d;
+}
+
+.dark-mode .status-item.active .status-content {
+    background: #1e3a8a;
+}
+
+.dark-mode .status-text {
+    color: white;
+}
+
+.dark-mode .status-time {
+    color: #d1d5db;
+}
+
+.dark-mode .order-details {
+    background: #374151;
+}
+
+.dark-mode .order-item {
+    background: #4b5563;
+}
+
+.dark-mode .item-name {
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Tracker Hero -->
+<section class="tracker-hero">
+    <div class="container">
+        <div class="tracker-hero-content text-center">
+            <h1 class="tracker-title">
+                <i class="fas fa-truck me-2"></i>Track Your Order
+            </h1>
+            <p class="tracker-subtitle">Enter your order details to get real-time updates on your shipment</p>
+        </div>
+    </div>
+</section>
+
+<!-- Tracker Content -->
+<section class="tracker-content">
+<div class="container">
+        <div class="row g-4">
+            <!-- Tracker Form -->
+            <div class="col-lg-4">
+                <div class="tracker-form-container">
+                    <h3 class="form-title">
+                        <i class="fas fa-search me-2"></i>Track Order
+                    </h3>
+                    <p class="form-subtitle">Enter your Order ID or Razorpay Order ID to track your order status.</p>
+                    
+                    <form method="post" action="#" id="trackerForm">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="orderId" class="form-label">
+                                <i class="fas fa-receipt me-1"></i>Order ID / Razorpay Order ID
+                            </label>
+                            <input type="text" class="form-control" id="orderId" name="orderId" 
+                                   placeholder="e.g. 123 or order_9A33XWu170gUtm" required>
+                        </div>
+                        
+                        <button type="submit" class="track-btn" id="trackBtn">
+                            <i class="fas fa-search me-2"></i>Track Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div class="col-lg-8">
+                <div class="results-container">
+                    <h3 class="results-title">
+                        <i class="fas fa-clipboard-list me-2"></i>Order Status
+                    </h3>
+                    <div id="statusResults">
+                        <div class="no-results">
+                            <div class="no-results-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <h4 class="no-results-title">Ready to Track</h4>
+                            <p class="no-results-text">Enter your Order ID or Razorpay Order ID to get real-time updates on your order status.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="results-container" id="orderDetailsContainer" style="display: none;">
+                    <h3 class="results-title">
+                        <i class="fas fa-shopping-bag me-2"></i>Order Details
+                    </h3>
+                    <div id="orderDetails">
+                        <!-- Order details will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('trackerForm');
+    const trackBtn = document.getElementById('trackBtn');
+    const statusResults = document.getElementById('statusResults');
+    const orderDetailsContainer = document.getElementById('orderDetailsContainer');
+    const orderDetails = document.getElementById('orderDetails');
+    
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        // Show loading state
+        trackBtn.classList.add('loading');
+        trackBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Tracking...';
+        
+        const formData = {
+            'orderId': document.querySelector('input[name=orderId]').value,
+            'csrfmiddlewaretoken': document.querySelector('input[name=csrfmiddlewaretoken]').value
+        };
+        
+        // Make AJAX request
+        fetch('/shop/tracker/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': formData.csrfmiddlewaretoken
+            },
+            body: new URLSearchParams(formData)
+        })
+        .then(response => response.text())
+        .then(data => {
+            try {
+                const result = JSON.parse(data);
+                
+                if (result.status === 'success') {
+                    displayOrderStatus(result.updates, result.orderId, result.razorpayOrderId);
+                    displayOrderDetails(result.itemsJson, result.orderId, result.razorpayOrderId);
+                    showNotification('Order found successfully!', 'success');
+                } else {
+                    displayError('Sorry, we couldn\'t find an order with those details. Please check the Order ID.');
+                    showNotification('Order not found. Please check your details.', 'danger');
+                }
+            } catch (error) {
+                displayError('Sorry, there was an error processing your request. Please try again.');
+                showNotification('Error processing request. Please try again.', 'danger');
+            }
+        })
+        .catch(error => {
+            displayError('Sorry, there was an error connecting to our servers. Please try again.');
+            showNotification('Connection error. Please try again.', 'danger');
+        })
+        .finally(() => {
+            // Reset button
+            trackBtn.classList.remove('loading');
+            trackBtn.innerHTML = '<i class="fas fa-search me-2"></i>Track Order';
+        });
+    });
+    
+    function displayOrderStatus(updates, orderId, razorpayOrderId) {
+        const timeline = document.createElement('div');
+        timeline.className = 'status-timeline';
+        
+        // Header with matched IDs
+        const header = document.createElement('div');
+        header.className = 'mb-3';
+        header.innerHTML = `
+            <div class="d-flex flex-column flex-md-row gap-2">
+                <div><strong>Order ID:</strong> ${orderId}</div>
+                ${razorpayOrderId ? `<div><strong>Razorpay Order ID:</strong> ${razorpayOrderId}</div>` : ''}
+            </div>`;
+
+        updates.forEach((update, index) => {
+            const statusItem = document.createElement('div');
+            statusItem.className = `status-item ${index === updates.length - 1 ? 'active' : 'completed'}`;
+            
+            statusItem.innerHTML = `
+                <div class="status-content">
+                    <div class="status-text">${update.text}</div>
+                    <div class="status-time">${update.time}</div>
+                </div>
+            `;
+            
+            timeline.appendChild(statusItem);
+        });
+        
+        statusResults.innerHTML = '';
+        if (header.innerText.trim().length) {
+            statusResults.appendChild(header);
+        }
+        statusResults.appendChild(timeline);
+    }
+    
+    function displayOrderDetails(itemsJson, orderId, razorpayOrderId) {
+        try {
+            const cart = JSON.parse(itemsJson);
+            const orderDetailsDiv = document.createElement('div');
+            orderDetailsDiv.className = 'order-details';
+
+            // Display matched Order IDs
+            orderDetailsDiv.innerHTML += `
+                <div class="alert alert-info mb-3">
+                    <strong>Order ID:</strong> ${orderId} <br>
+                    <strong>Razorpay Order ID:</strong> ${razorpayOrderId || 'N/A'}
+                </div>
+            `;
+
+            let grandTotal = 0;
+
+            for (let key in cart) {
+                const qty = cart[key][0];
+                const name = cart[key][1];
+                const price = Number(cart[key][2] || 0);
+                const lineTotal = qty * price;
+                grandTotal += lineTotal;
+
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item mb-3 p-3 bg-white rounded-3 shadow-sm';
+                orderItem.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="item-info">
+                            <div class="item-name fw-bold text-dark">${name}</div>
+                            <div class="item-price text-muted">₹${price.toLocaleString()} each</div>
+                        </div>
+                        <div class="item-quantity">
+                            <span class="badge bg-primary">Qty: ${qty}</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="item-details">
+                            <small class="text-muted">Line Total</small>
+                        </div>
+                        <div class="item-total">
+                            <strong class="text-success">₹${lineTotal.toLocaleString()}</strong>
+                        </div>
+                    </div>
+                `;
+                orderDetailsDiv.appendChild(orderItem);
+            }
+
+            // Grand total row
+            const totalRow = document.createElement('div');
+            totalRow.className = 'mt-4 p-4 bg-gradient text-white rounded-3 shadow-lg d-flex justify-content-between align-items-center';
+            totalRow.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            totalRow.innerHTML = `
+                <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Grand Total</h5>
+                <h4 class="mb-0 fw-bold">₹${grandTotal.toLocaleString()}</h4>
+            `;
+            orderDetailsDiv.appendChild(totalRow);
+
+            orderDetails.innerHTML = '';
+            orderDetails.appendChild(orderDetailsDiv);
+            orderDetailsContainer.style.display = 'block';
+        } catch (error) {
+            console.error('Error parsing order details:', error);
+        }
+    }
+    
+    function displayError(message) {
+        statusResults.innerHTML = `
+            <div class="no-results">
+                <div class="no-results-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h4 class="no-results-title">Order Not Found</h4>
+                <p class="no-results-text">${message}</p>
+            </div>
+        `;
+        orderDetailsContainer.style.display = 'none';
+    }
+    
+    // Notification function
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 120px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    
+    // Add loading animation to form
+    const formContainer = document.querySelector('.tracker-form-container');
+    if (formContainer) {
+        formContainer.style.opacity = '0';
+        formContainer.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            formContainer.style.transition = 'all 0.6s ease';
+            formContainer.style.opacity = '1';
+            formContainer.style.transform = 'translateY(0)';
+        }, 200);
+    }
+});
+</script>
+{% endblock %}
