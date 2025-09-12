@@ -718,7 +718,7 @@ function updateCheckoutDisplay() {
         for (let item in cart) {
             let name = cart[item][1];
             let qty = cart[item][0];
-            let itemPrice = cart[item][2];
+            let itemPrice = parseFloat(cart[item][2]);
             let itemTotal = qty * itemPrice;
 
             sum += qty;
@@ -746,7 +746,7 @@ function updateCheckoutDisplay() {
         }
     }
 
-    cartCountElement.textContent = sum;
+    if (cartCountElement) cartCountElement.textContent = sum;
     totalPriceElement.textContent = totalPrice.toLocaleString();
 
     // Update hidden inputs for form submission
@@ -767,6 +767,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartCountElement = document.getElementById('cart');
     const itemsJsonInput = document.getElementById('itemsJson');
     const amountInput = document.getElementById('amount');
+
+    // Attach event listeners for quantity buttons using delegation
+    itemsContainer.addEventListener('click', function(e) {
+        const button = e.target.closest('.decrease-qty') || e.target.closest('.increase-qty');
+        if (button) {
+            const cartItem = e.target.closest('.cart-item');
+            const productId = cartItem.getAttribute('data-product-id');
+            const qtySpan = cartItem.querySelector('span');
+            const decreaseBtn = cartItem.querySelector('.decrease-qty');
+            let qty = parseInt(qtySpan.textContent);
+
+            if (button.classList.contains('decrease-qty')) {
+                if (qty > 1) {
+                    qty--;
+                }
+            } else {
+                qty++;
+            }
+
+            qtySpan.textContent = qty;
+            decreaseBtn.disabled = qty <= 1;
+            updateCheckoutQuantity(productId, qty);
+        }
+    });
 
     // Variables from Django context
     var is_authenticated = {{ user.is_authenticated|yesno:"true,false" }};
@@ -813,7 +837,7 @@ document.addEventListener('DOMContentLoaded', function() {
         for (let item in cart) {
         let name = cart[item][1];
         let qty = cart[item][0];
-        let itemPrice = cart[item][2];
+        let itemPrice = parseFloat(cart[item][2]);
             let itemTotal = qty * itemPrice;
             console.log(`Item: ${name}, Qty: ${qty}, Price: ${itemPrice}, Total: ${itemTotal}`);
             sum += qty;
@@ -842,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Update totals
-    cartCountElement.textContent = sum;
+    if (cartCountElement) cartCountElement.textContent = sum;
     totalPriceElement.textContent = totalPrice.toLocaleString();
     itemsJsonInput.value = JSON.stringify(cart);
     amountInput.value = totalPrice;
@@ -975,27 +999,41 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
+        // Check if cart is empty
+        let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+        if (Object.keys(cart).length === 0) {
+            showNotification('Your cart is empty. Please add items to your cart before proceeding.', 'warning');
+            return;
+        }
+
+        // Check if total amount is valid
+        const totalPrice = parseFloat(document.getElementById('totalPrice').textContent.replace(/,/g, ''));
+        if (totalPrice <= 0) {
+            showNotification('Invalid order amount. Please check your cart.', 'danger');
+            return;
+        }
+
         // Validate all fields
         const fields = form.querySelectorAll('input[required]');
         let isFormValid = true;
-        
+
         fields.forEach(field => {
             if (!validateField(field)) {
                 isFormValid = false;
             }
         });
-        
+
         if (isFormValid) {
             // Show loading state
             submitBtn.classList.add('loading');
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-            
+
             // Update progress
             updateProgress(2);
-            
+
             // Clear saved form data
             localStorage.removeItem('checkoutFormData');
-            
+
             // Submit form to payment page
             setTimeout(() => {
                 // Submit the form to the payment page

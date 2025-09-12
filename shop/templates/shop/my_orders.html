@@ -2,7 +2,7 @@
 
 {% block title %}My Orders{% endblock %}
 
-{% block content %}
+{% block body %}
 <div class="container my-5">
     <h2>My Orders</h2>
     <p>User Email: {{ user_email }}</p>
@@ -10,11 +10,13 @@
         <div class="list-group">
             {% for order in orders %}
                 <div class="list-group-item mb-3 p-3 border rounded shadow-sm">
-                    <h5>Order #{{ order.order_id }}</h5>
+                    <h5>Order #{{ order.order.razorpay_order_id }}</h5>
                     <p><strong>Date:</strong> {{ order.order_date|default:"N/A" }}</p>
+                    <p><strong>Product Name:</strong>{{ order.order.product_names }}</p>
+                    <p><strong>Quantity:</strong> {{ order.quantity }}</p>
                     <p><strong>Status:</strong> {{ order.status|default:"N/A" }}</p>
-                    <p><strong>Total:</strong> ₹{{ order.amount }}</p>
-                    <a href="{% url 'shop-tracker' %}" class="btn btn-primary btn-sm">Track Order</a>
+                    <p><strong>Total:</strong> ₹{{ order.order.amount }}</p>
+                    <a href="{% url 'TrackingStatus' %}" class="btn btn-primary btn-sm">Track Order</a>
                 </div>
             {% endfor %}
         </div>

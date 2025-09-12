@@ -15,16 +15,33 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def my_orders(request):
     user_email = request.user.email.strip()
-    # Fetch orders and include user email for debugging
+    # Fetch orders for the user
     orders = Order.objects.filter(email__iexact=user_email).order_by('-order_id')
     print(f"Fetching orders for user email: '{user_email}', found: {orders.count()}")
 
-    # Debug: fetch all orders and their emails
-    all_orders = Order.objects.all().values('order_id', 'email', 'amount')
-    for o in all_orders:
-        print(f"Order ID: {o['order_id']}, Email: '{o['email']}', Amount: {o['amount']}")
+    # Prepare combined list of orders with latest update info
+    orders_with_updates = []
+    for order in orders:
+        latest_update = OrderUpdate.objects.filter(order_id=order.order_id).order_by('-timestamp').first()
+        order_date = latest_update.timestamp if latest_update else None
+        status = latest_update.update_desc if latest_update else "N/A"
 
-    return render(request, 'shop/my_orders.html', {'orders': orders, 'user_email': user_email})
+        # Calculate total quantity from items_json
+        total_qty = 0
+        try:
+            items = json.loads(order.items_json)
+            total_qty = sum(item['qty'] for item in items.values())
+        except (json.JSONDecodeError, KeyError, TypeError):
+            total_qty = 0
+
+        orders_with_updates.append({
+            'order': order,
+            'order_date': order_date,
+            'status': status,
+            'quantity': total_qty,
+        })
+
+    return render(request, 'shop/my_orders.html', {'orders': orders_with_updates, 'user_email': user_email})
 
 
 
@@ -153,10 +170,23 @@ def checkout(request):
         zip_code = request.POST.get('zip_code', '')
         phone = request.POST.get('phone', '')
 
+        # Extract product names and descriptions from items_json
+        product_names = []
+        product_descs = []
+        try:
+            items = json.loads(items_json)
+            for item in items:
+                product_names.append(item.get('product_name', ''))
+                product_descs.append(item.get('desc', ''))
+        except Exception as e:
+            print(f"Error parsing items_json: {e}")
+
         order = Order(
             items_json=items_json, name=name, email=email,
             address=address, city=city, state=state,
-            zip_code=zip_code, phone=phone, amount=amount/100
+            zip_code=zip_code, phone=phone, amount=amount/100,
+            product_names=', '.join(product_names),
+            product_descs=', '.join(product_descs)
         )
         order.save()
 
@@ -214,7 +244,6 @@ def initiate_payment(request):
         # Get form data from checkout
         items_json = request.POST.get('itemsJson', '')
         name = request.POST.get('name', '')
-        amount = int(float(request.POST.get('amount', '0')) * 100)  # Razorpay uses paise
         email = request.POST.get('email', '').strip()
         address = request.POST.get('address1', '') + " " + request.POST.get('address2', '')
         city = request.POST.get('city', '')
@@ -222,11 +251,36 @@ def initiate_payment(request):
         zip_code = request.POST.get('zip_code', '')
         phone = request.POST.get('phone', '')
 
+        # Extract product names and descriptions from items_json and calculate amount
+        product_names = []
+        product_descs = []
+        total_amount = 0
+        try:
+            items = json.loads(items_json)
+            for item_key, item_data in items.items():
+                qty = item_data[0]
+                price = item_data[2]
+                total_amount += qty * price
+                product_names.append(item_data[1])  # product_name
+                product_descs.append('')  # desc not available in cart format, can be updated later
+        except Exception as e:
+            print(f"Error parsing items_json: {e}")
+            # If items_json is invalid, cannot proceed
+            return HttpResponse("Invalid cart data", status=400)
+
+        # Always use calculated amount from cart items
+        if total_amount <= 0:
+            return HttpResponse("Cart is empty or invalid amount", status=400)
+
+        amount = int(total_amount * 100)  # Razorpay uses paise
+
         # Save order in database
         order = Order(
             items_json=items_json, name=name, email=email,
             address=address, city=city, state=state,
-            zip_code=zip_code, phone=phone, amount=amount/100
+            zip_code=zip_code, phone=phone, amount=amount/100,
+            product_names=', '.join(product_names),
+            product_descs=', '.join(product_descs)
         )
         order.save()
 
