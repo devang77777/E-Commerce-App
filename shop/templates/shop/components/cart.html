@@ -19,18 +19,9 @@
         <!-- Cart items will be dynamically inserted here -->
       </div>
       <div class="modal-footer d-flex flex-column align-items-stretch">
-        <div class="d-flex justify-content-between mb-2">
-          <div><strong>Subtotal:</strong></div>
-          <div>₹<span id="cart-subtotal">0</span></div>
-        </div>
-        <div class="d-flex justify-content-between mb-2">
-          <div><strong>Tax (5%):</strong></div>
-          <div>₹<span id="cart-tax">0</span></div>
-        </div>
-        <div class="d-flex justify-content-between mb-3">
-          <div><strong>Service (8%):</strong></div>
-          <div>₹<span id="cart-service">0</span></div>
-        </div>
+
+        
+
         <div class="d-flex justify-content-between mb-3 border-top pt-2">
           <div><strong>Total:</strong></div>
           <div>₹<span id="cart-total">0</span></div>
@@ -156,9 +147,7 @@ class NewCartComponent {
         this.cartCountBadge = document.getElementById('cart-count-badge');
         this.cartItemsContainer = document.getElementById('cart-items-container');
         this.cartTotalItems = document.getElementById('cart-total-items');
-        this.cartSubtotal = document.getElementById('cart-subtotal');
-        this.cartTax = document.getElementById('cart-tax');
-        this.cartService = document.getElementById('cart-service');
+
         this.cartTotal = document.getElementById('cart-total');
         this.clearCartBtn = document.getElementById('clear-cart-btn');
         this.checkoutBtn = document.getElementById('checkout-btn');
@@ -205,9 +194,7 @@ class NewCartComponent {
             this.cartItemsContainer.innerHTML = `<div class="cart-empty"><i class="fas fa-shopping-cart"></i> Your cart is empty.</div>`;
             this.cartTotalItems.textContent = '0';
             this.cartCountBadge.style.display = 'none';
-            this.cartSubtotal.textContent = '0';
-            this.cartTax.textContent = '0';
-            this.cartService.textContent = '0';
+
             this.cartTotal.textContent = '0';
             this.checkoutBtn.classList.add('disabled');
             this.clearCartBtn.disabled = true;
@@ -240,14 +227,8 @@ class NewCartComponent {
         this.cartCountBadge.textContent = this.cartTotalItems.textContent;
         this.cartCountBadge.style.display = 'inline-block';
 
-        const tax = +(subtotal * 0.05).toFixed(2);
-        const service = +(subtotal * 0.08).toFixed(2);
-        const total = +(subtotal + tax + service).toFixed(2);
 
-        this.cartSubtotal.textContent = subtotal.toLocaleString();
-        this.cartTax.textContent = tax.toLocaleString();
-        this.cartService.textContent = service.toLocaleString();
-        this.cartTotal.textContent = total.toLocaleString();
+        this.cartTotal.textContent = subtotal.toLocaleString();
 
         this.checkoutBtn.classList.remove('disabled');
         this.clearCartBtn.disabled = false;

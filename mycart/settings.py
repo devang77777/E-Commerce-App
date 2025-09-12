@@ -157,11 +157,11 @@ LOGIN_URL = 'login'
 
 # Jazzmin Admin UI configuration
 JAZZMIN_SETTINGS = {
-    "site_title": "EECT Admin",
-    "site_header": "EECT E‑Commerce",
-    "site_brand": "EECT",
-    "welcome_sign": "Welcome to EECT Admin",
-    "copyright": "EECT",
+    "site_title": "My Cart Admin",
+    "site_header": "My Cart E‑Commerce",
+    "site_brand": "My Cart",
+    "welcome_sign": "Welcome to My Cart Admin",
+    "copyright": "My Cart Ltd.",
     "show_ui_builder": True,
     "navigation_expanded": True,
     "hide_apps": [],

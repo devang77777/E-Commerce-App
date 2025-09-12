@@ -173,11 +173,13 @@ def checkout(request):
         # Extract product names and descriptions from items_json
         product_names = []
         product_descs = []
+        total_quantity = 0
         try:
             items = json.loads(items_json)
             for item in items:
                 product_names.append(item.get('product_name', ''))
                 product_descs.append(item.get('desc', ''))
+                total_quantity += item.get('qty', 0)
         except Exception as e:
             print(f"Error parsing items_json: {e}")
 
@@ -186,7 +188,8 @@ def checkout(request):
             address=address, city=city, state=state,
             zip_code=zip_code, phone=phone, amount=amount/100,
             product_names=', '.join(product_names),
-            product_descs=', '.join(product_descs)
+            product_descs=', '.join(product_descs),
+            total_quantity=total_quantity
         )
         order.save()
 
@@ -255,12 +258,14 @@ def initiate_payment(request):
         product_names = []
         product_descs = []
         total_amount = 0
+        total_quantity = 0
         try:
             items = json.loads(items_json)
             for item_key, item_data in items.items():
                 qty = item_data[0]
                 price = item_data[2]
                 total_amount += qty * price
+                total_quantity += qty
                 product_names.append(item_data[1])  # product_name
                 product_descs.append('')  # desc not available in cart format, can be updated later
         except Exception as e:
@@ -280,7 +285,8 @@ def initiate_payment(request):
             address=address, city=city, state=state,
             zip_code=zip_code, phone=phone, amount=amount/100,
             product_names=', '.join(product_names),
-            product_descs=', '.join(product_descs)
+            product_descs=', '.join(product_descs),
+            total_quantity=total_quantity
         )
         order.save()
 

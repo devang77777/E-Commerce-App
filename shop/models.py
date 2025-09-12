@@ -46,6 +46,7 @@ class Order(models.Model):
     phone = models.CharField(max_length=111, default="")
     product_names = models.TextField(blank=True, null=True)
     product_descs = models.TextField(blank=True, null=True)
+    total_quantity = models.IntegerField(default=0)
     razorpay_order_id = models.CharField(max_length=64, blank=True, null=True)
 
     def __str__(self):
