@@ -10,10 +10,26 @@
         <div class="list-group">
             {% for order in orders %}
                 <div class="list-group-item mb-3 p-3 border rounded shadow-sm">
-                    <h5>Order #{{ order.order.order_id }}</h5>
+                    <h5>Order Id#{{ order.order.razorpay_order_id }}</h5>
                     <p><strong>Date:</strong> {{ order.order_date|date:"M d, Y" }}</p>
-                    <p><strong>Product Name:</strong>{{ order.order.product_names }}</p>
-                    <p><strong>Quantity:</strong> {{ order.order.total_quantity }}</p>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product, qty in order.item_quantities.items %}
+                            <tr>
+                                <td>{{ product }}</td>
+                                <td>{{ qty }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <p><strong>Total Qty:</strong> {{ order.order.total_quantity|default:"N/A" }}</p>
+                    <p><strong>Total Amount: ₹</strong>{{ order.order.amount|default:0}}</p>
                     <p><strong>Status:</strong> {{ order.status|default:"N/A" }}</p>
                     <a href="{% url 'TrackingStatus' %}" class="btn btn-primary btn-sm">Track Order</a>
                 </div>

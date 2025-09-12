@@ -45,8 +45,8 @@ class Order(models.Model):
     zip_code = models.CharField(max_length=111)
     phone = models.CharField(max_length=111, default="")
     product_names = models.TextField(blank=True, null=True)
-    product_descs = models.TextField(blank=True, null=True)
     total_quantity = models.IntegerField(default=0)
+    item_quantities = models.TextField(blank=True, null=True)  # New field to store item quantities as JSON string
     razorpay_order_id = models.CharField(max_length=64, blank=True, null=True)
 
     def __str__(self):

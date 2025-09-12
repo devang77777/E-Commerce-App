@@ -34,11 +34,49 @@ def my_orders(request):
         except (json.JSONDecodeError, KeyError, TypeError):
             total_qty = 0
 
+        # Parse item_quantities
+        item_quantities_parsed = {}
+        try:
+            item_quantities_parsed = json.loads(order.item_quantities or '{}')
+        except json.JSONDecodeError:
+            item_quantities_parsed = {}
+
+        # Fetch product names for item_quantities keys (which are product IDs)
+        product_id_to_name = {}
+        product_ids = list(item_quantities_parsed.keys())
+        try:
+            products = Product.objects.filter(id__in=product_ids)
+            product_id_to_name = {str(p.id): p.product_name for p in products}
+        except Exception as e:
+            product_id_to_name = {}
+
+        # Map product IDs to names in item_quantities
+        item_quantities_named = {}
+        for pid, qty in item_quantities_parsed.items():
+            # If pid is a product id string like 'pr4', extract numeric id
+            numeric_id = pid
+            if isinstance(pid, str) and pid.startswith('pr'):
+                numeric_id = pid[2:]
+            # Use product name if available, else fallback to pid
+            name = product_id_to_name.get(numeric_id)
+            if not name:
+                # If pid is like 'pr4', fallback to product name from product_names list if possible
+                if isinstance(pid, str) and pid.startswith('pr'):
+                    try:
+                        index = int(numeric_id) - 1
+                        name = order.product_names.split(', ')[index]
+                    except Exception:
+                        name = pid
+                else:
+                    name = pid
+            item_quantities_named[name] = qty
+
         orders_with_updates.append({
             'order': order,
             'order_date': order_date,
             'status': status,
             'quantity': total_qty,
+            'item_quantities': item_quantities_named,
         })
 
     return render(request, 'shop/my_orders.html', {'orders': orders_with_updates, 'user_email': user_email})
@@ -170,16 +208,17 @@ def checkout(request):
         zip_code = request.POST.get('zip_code', '')
         phone = request.POST.get('phone', '')
 
-        # Extract product names and descriptions from items_json
+        # Extract product names and quantities from items_json
         product_names = []
-        product_descs = []
+        item_quantities = {}
         total_quantity = 0
         try:
             items = json.loads(items_json)
             for item in items:
                 product_names.append(item.get('product_name', ''))
-                product_descs.append(item.get('desc', ''))
-                total_quantity += item.get('qty', 0)
+                qty = item.get('qty', 0)
+                total_quantity += qty
+                item_quantities[item.get('product_name', str(len(item_quantities)))] = qty
         except Exception as e:
             print(f"Error parsing items_json: {e}")
 
@@ -188,8 +227,8 @@ def checkout(request):
             address=address, city=city, state=state,
             zip_code=zip_code, phone=phone, amount=amount/100,
             product_names=', '.join(product_names),
-            product_descs=', '.join(product_descs),
-            total_quantity=total_quantity
+            total_quantity=total_quantity,
+            item_quantities=json.dumps(item_quantities)
         )
         order.save()
 
@@ -204,7 +243,7 @@ def checkout(request):
         order.save(update_fields=["razorpay_order_id"])
 
         # Create update AFTER we have razorpay_order_id and copy it onto the update
-        update = OrderUpdate(order_id=order.order_id, update_desc="The order has been placed", razorpay_order_id=order.razorpay_order_id)
+        update = OrderUpdate(order_id=order.order_id, update_desc="The order has created", razorpay_order_id=order.razorpay_order_id)
         update.save()
 
         context = {
@@ -254,9 +293,9 @@ def initiate_payment(request):
         zip_code = request.POST.get('zip_code', '')
         phone = request.POST.get('phone', '')
 
-        # Extract product names and descriptions from items_json and calculate amount
+        # Extract product names and quantities from items_json and calculate amount
         product_names = []
-        product_descs = []
+        item_quantities = {}
         total_amount = 0
         total_quantity = 0
         try:
@@ -267,7 +306,7 @@ def initiate_payment(request):
                 total_amount += qty * price
                 total_quantity += qty
                 product_names.append(item_data[1])  # product_name
-                product_descs.append('')  # desc not available in cart format, can be updated later
+                item_quantities[item_data[1]] = qty  # Store quantity for each item
         except Exception as e:
             print(f"Error parsing items_json: {e}")
             # If items_json is invalid, cannot proceed
@@ -279,19 +318,25 @@ def initiate_payment(request):
 
         amount = int(total_amount * 100)  # Razorpay uses paise
 
+        # Validate amount is within Razorpay limits (max 1 crore paise = 10 million INR)
+        MAX_AMOUNT = 2500000000  # 25 crore paise = 250 million INR, Razorpay max order amount
+        if amount <= 0 or amount > MAX_AMOUNT:
+            return HttpResponse(f"Invalid amount: {amount}. Must be between 1 and {MAX_AMOUNT} paise.", status=400)
+
         # Save order in database
         order = Order(
             items_json=items_json, name=name, email=email,
             address=address, city=city, state=state,
             zip_code=zip_code, phone=phone, amount=amount/100,
             product_names=', '.join(product_names),
-            product_descs=', '.join(product_descs),
-            total_quantity=total_quantity
+            total_quantity=total_quantity,
+            item_quantities=json.dumps(item_quantities)
         )
         order.save()
 
         # Create Razorpay order
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        print(f"Creating Razorpay order with amount: {amount}")
         razorpay_order = client.order.create({
             "amount": amount,
             "currency": "INR",
@@ -302,7 +347,7 @@ def initiate_payment(request):
         order.save(update_fields=["razorpay_order_id"])
 
         # Create order update now that we have the razorpay id
-        update = OrderUpdate(order_id=order.order_id, update_desc="The order has been placed", razorpay_order_id=order.razorpay_order_id)
+        update = OrderUpdate(order_id=order.order_id, update_desc="The order has created.", razorpay_order_id=order.razorpay_order_id)
         update.save()
 
         # Pass details to payment template

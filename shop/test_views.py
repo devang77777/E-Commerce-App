@@ -1,13 +1,8 @@
-import os
-import django
+import json
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Order, OrderUpdate
-import json
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mycart.settings')
-django.setup()
 
 class ShopViewsTestCase(TestCase):
     def setUp(self):
