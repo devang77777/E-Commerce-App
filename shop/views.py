@@ -14,15 +14,15 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def my_orders(request):
-    user_email = request.user.email
+    user_email = request.user.email.strip()
     # Fetch orders and include user email for debugging
     orders = Order.objects.filter(email__iexact=user_email).order_by('-order_id')
-    print(f"Fetching orders for user email: {user_email}, found: {orders.count()}")
+    print(f"Fetching orders for user email: '{user_email}', found: {orders.count()}")
 
     # Debug: fetch all orders and their emails
     all_orders = Order.objects.all().values('order_id', 'email', 'amount')
     for o in all_orders:
-        print(f"Order ID: {o['order_id']}, Email: {o['email']}, Amount: {o['amount']}")
+        print(f"Order ID: {o['order_id']}, Email: '{o['email']}', Amount: {o['amount']}")
 
     return render(request, 'shop/my_orders.html', {'orders': orders, 'user_email': user_email})
 
@@ -146,7 +146,7 @@ def checkout(request):
         items_json = request.POST.get('itemsJson', '')
         name = request.POST.get('name', '')
         amount = int(float(request.POST.get('amount', '0')) * 100)  # Razorpay uses paise
-        email = request.POST.get('email', '')
+        email = request.POST.get('email', '').strip()
         address = request.POST.get('address1', '') + " " + request.POST.get('address2', '')
         city = request.POST.get('city', '')
         state = request.POST.get('state', '')
@@ -215,7 +215,7 @@ def initiate_payment(request):
         items_json = request.POST.get('itemsJson', '')
         name = request.POST.get('name', '')
         amount = int(float(request.POST.get('amount', '0')) * 100)  # Razorpay uses paise
-        email = request.POST.get('email', '')
+        email = request.POST.get('email', '').strip()
         address = request.POST.get('address1', '') + " " + request.POST.get('address2', '')
         city = request.POST.get('city', '')
         state = request.POST.get('state', '')
