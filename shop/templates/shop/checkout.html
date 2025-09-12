@@ -667,32 +667,132 @@
 {% endblock %}
 {% block js %}
 <script>
+// Function to update quantity in checkout
+window.updateCheckoutQuantity = function(productId, newQty) {
+    let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+    const itemKey = 'pr' + productId;
+
+    if (cart[itemKey] && newQty > 0) {
+        cart[itemKey][0] = newQty;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        // Update cart component if it exists
+        if (typeof window.newCartComponent !== 'undefined' && typeof window.newCartComponent.updateQuantity === 'function') {
+            window.newCartComponent.updateQuantity(productId, newQty);
+        }
+        updateCheckoutDisplay();
+    } else if (cart[itemKey] && newQty <= 0) {
+        delete cart[itemKey];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        if (typeof window.newCartComponent !== 'undefined' && typeof window.newCartComponent.removeItem === 'function') {
+            window.newCartComponent.removeItem(productId);
+        }
+        updateCheckoutDisplay();
+    }
+};
+
+// Function to update the checkout display dynamically without reload
+function updateCheckoutDisplay() {
+    let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+    let sum = 0;
+    let totalPrice = 0;
+    const itemsContainer = document.getElementById('items');
+    const totalPriceElement = document.getElementById('totalPrice');
+    const cartCountElement = document.getElementById('cart');
+
+    itemsContainer.innerHTML = '';
+
+    if (Object.keys(cart).length === 0) {
+        itemsContainer.innerHTML = `
+            <div class="empty-cart">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h4 class="empty-cart-title">Your cart is empty</h4>
+                <p class="empty-cart-text">Please add some items to your cart before checking out.</p>
+                <a href="/shop" class="shop-btn">
+                    <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                </a>
+            </div>
+        `;
+    } else {
+        for (let item in cart) {
+            let name = cart[item][1];
+            let qty = cart[item][0];
+            let itemPrice = cart[item][2];
+            let itemTotal = qty * itemPrice;
+
+            sum += qty;
+            totalPrice += itemTotal;
+
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item';
+            cartItem.setAttribute('data-product-id', item.replace('pr', ''));
+            cartItem.innerHTML = `
+                <div class="item-info">
+                    <div class="item-name">${name}</div>
+                    <div class="item-price">₹${itemPrice.toLocaleString()} each</div>
+                </div>
+                <div class="item-quantity-controls">
+                    <button class="decrease-qty" ${qty <= 1 ? 'disabled' : ''}>
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span>${qty}</span>
+                    <button class="increase-qty">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            `;
+            itemsContainer.appendChild(cartItem);
+        }
+    }
+
+    cartCountElement.textContent = sum;
+    totalPriceElement.textContent = totalPrice.toLocaleString();
+
+    // Update hidden inputs for form submission
+    const itemsJsonInput = document.getElementById('itemsJson');
+    const amountInput = document.getElementById('amount');
+    itemsJsonInput.value = JSON.stringify(cart);
+    amountInput.value = totalPrice;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Load cart from localStorage
     let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
     let sum = 0;
     let totalPrice = 0;
-    
+
     const itemsContainer = document.getElementById('items');
     const totalPriceElement = document.getElementById('totalPrice');
     const cartCountElement = document.getElementById('cart');
     const itemsJsonInput = document.getElementById('itemsJson');
     const amountInput = document.getElementById('amount');
-    
+
+    // Variables from Django context
+    var is_authenticated = {{ user.is_authenticated|yesno:"true,false" }};
+    var thank = {{ thank|default:"False"|yesno:"true,false" }};
+    var user_full_name = "{{ user.get_full_name|default:user.username|escapejs }}";
+    var user_email = "{{ user.email|escapejs }}";
+    var order_id = "{{ id|default:''|escapejs }}";
+
     // Auto-populate form fields if user is authenticated
     const nameField = document.getElementById('name');
     const emailField = document.getElementById('email');
-    
+
     // Check if fields are empty and user is authenticated
-    {% if user.is_authenticated %}
+    if (is_authenticated) {
         if (nameField && !nameField.value.trim()) {
-            nameField.value = '{{ user.get_full_name|default:user.username }}';
+            nameField.value = user_full_name;
         }
         if (emailField && !emailField.value.trim()) {
-            emailField.value = '{{ user.email }}';
+            emailField.value = user_email;
         }
-    {% endif %}
+    }
+
+
     
+
+
     // Check if cart is empty
     if (Object.keys(cart).length === 0) {
         itemsContainer.innerHTML = `
@@ -708,13 +808,14 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 } else {
+        console.log("Cart data:", cart);
         // Display cart items
         for (let item in cart) {
         let name = cart[item][1];
         let qty = cart[item][0];
         let itemPrice = cart[item][2];
             let itemTotal = qty * itemPrice;
-            
+            console.log(`Item: ${name}, Qty: ${qty}, Price: ${itemPrice}, Total: ${itemTotal}`);
             sum += qty;
             totalPrice += itemTotal;
             
@@ -726,15 +827,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="item-name">${name}</div>
                     <div class="item-price">₹${itemPrice.toLocaleString()} each</div>
                 </div>
-                <div class="item-quantity-controls">
-                    <button onclick="updateCheckoutQuantity('${item.replace('pr', '')}', ${qty - 1})" ${qty <= 1 ? 'disabled' : ''}>
-                        <i class="fas fa-minus"></i>
-                    </button>
-                    <span>${qty}</span>
-                    <button onclick="updateCheckoutQuantity('${item.replace('pr', '')}', ${qty + 1})">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
+                    <div class="item-quantity-controls">
+                        <button class="decrease-qty" ${qty <= 1 ? 'disabled' : ''}>
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span>${qty}</span>
+                        <button class="increase-qty">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
             `;
             itemsContainer.appendChild(cartItem);
         }
@@ -873,7 +974,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         // Validate all fields
         const fields = form.querySelectorAll('input[required]');
         let isFormValid = true;
@@ -969,35 +1070,11 @@ document.addEventListener('DOMContentLoaded', function() {
             item.style.transform = 'translateY(0)';
         }, index * 100);
     });
-    
-    // Function to update quantity in checkout
-    window.updateCheckoutQuantity = function(productId, newQty) {
-        let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
-        const itemKey = 'pr' + productId;
 
-        if (cart[itemKey] && newQty > 0) {
-            cart[itemKey][0] = newQty;
-            localStorage.setItem('cart', JSON.stringify(cart));
-            // Update cart component if it exists
-            if (typeof updateGlobalCart === 'function') {
-                updateGlobalCart();
-            }
-            location.reload(); // Reload to update the display
-        } else if (cart[itemKey] && newQty <= 0) {
-            delete cart[itemKey];
-            localStorage.setItem('cart', JSON.stringify(cart));
-            // Update cart component if it exists
-            if (typeof updateGlobalCart === 'function') {
-                updateGlobalCart();
-            }
-            location.reload(); // Reload to update the display
-        }
-    };
-
-    // Handle thank you message
+// Handle thank you message
 {% if thank %}
     showNotification('Thanks for ordering with us! Your order ID is {{id}}. Use it to track your order.', 'success');
-localStorage.removeItem('cart');
+    localStorage.removeItem('cart');
     setTimeout(() => {
         window.location.href = "/shop";
     }, 3000);

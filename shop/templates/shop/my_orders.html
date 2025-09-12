@@ -1,0 +1,25 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2>My Orders</h2>
+    <p>User Email: {{ user_email }}</p>
+    {% if orders %}
+        <div class="list-group">
+            {% for order in orders %}
+                <div class="list-group-item mb-3 p-3 border rounded shadow-sm">
+                    <h5>Order #{{ order.order_id }}</h5>
+                    <p><strong>Date:</strong> {{ order.order_date|default:"N/A" }}</p>
+                    <p><strong>Status:</strong> {{ order.status|default:"N/A" }}</p>
+                    <p><strong>Total:</strong> ₹{{ order.amount }}</p>
+                    <a href="{% url 'shop-tracker' %}" class="btn btn-primary btn-sm">Track Order</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You have no orders yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

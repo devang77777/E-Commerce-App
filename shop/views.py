@@ -5,7 +5,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from PayTm import Checksum
 from .models import Product, ProductImage, Contact, Order, OrderUpdate
 from django.db.models import Q
 from math import ceil
@@ -13,6 +12,19 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
+@login_required
+def my_orders(request):
+    user_email = request.user.email
+    # Fetch orders and include user email for debugging
+    orders = Order.objects.filter(email__iexact=user_email).order_by('-order_id')
+    print(f"Fetching orders for user email: {user_email}, found: {orders.count()}")
+
+    # Debug: fetch all orders and their emails
+    all_orders = Order.objects.all().values('order_id', 'email', 'amount')
+    for o in all_orders:
+        print(f"Order ID: {o['order_id']}, Email: {o['email']}, Amount: {o['amount']}")
+
+    return render(request, 'shop/my_orders.html', {'orders': orders, 'user_email': user_email})
 
 
 

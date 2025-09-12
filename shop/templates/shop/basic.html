@@ -357,8 +357,8 @@
         <span class="badge bg-danger position-absolute top-0 start-100 translate-middle" id="cart">0</span>
     </a>
 </li> {% endcomment %}
-                <!-- Cart Component -->
-                {% include 'shop/components/cart.html' %}
+    <!-- Cart Component -->
+    {% include 'shop/components/cart.html' %}
 
                 <!-- Dark Mode Toggle -->
                 <button class="btn dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode" style="margin-left: 15px;">
@@ -366,24 +366,25 @@
                 </button>
                 <!-- filepath: d:\internship1\Minor Project\EECT\E-Commerce-App\shop\templates\shop\basic.html -->
 <!-- ...existing code... -->
-<ul class="navbar-nav ms-auto">
-    <!-- ...other nav items... -->
-    {% if user.is_authenticated %}
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user"></i> {{ user.username }}
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-            {% comment %} <li><a class="dropdown-item" href="#">Profile</a></li> {% endcomment %}
-            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-        </ul>
-    </li>
-    {% else %}
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Sign In</a>
-    </li>
-    {% endif %}
-</ul>
+    <ul class="navbar-nav ms-auto">
+        <!-- ...other nav items... -->
+        {% if user.is_authenticated %}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i> {{ user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
+                {% comment %} <li><a class="dropdown-item" href="#">Profile</a></li> {% endcomment %}
+                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </li>
+        {% else %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+        </li>
+        {% endif %}
+    </ul>
 <!-- ...existing code... -->
             </div>
         </div>
@@ -402,7 +403,7 @@
                     <h5 class="mb-3">
                         <i class="fas fa-shopping-bag me-2"></i>My Awesome Cart
                     </h5>
-                    <p class="text-muted">
+                    <p class="color-white">
                         Your one-stop destination for the latest and greatest products. 
                         We bring you quality, convenience, and unbeatable prices.
                     </p>
@@ -415,25 +416,25 @@
                 </div>
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3">Quick Links</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="/shop" class="text-muted text-decoration-none">Home</a></li>
-                        <li><a href="/shop/about/" class="text-muted text-decoration-none">About</a></li>
-                        <li><a href="/shop/contact/" class="text-muted text-decoration-none">Contact</a></li>
-                        <li><a href="/shop/tracker/" class="text-muted text-decoration-none">Track Order</a></li>
+                    <ul class="list-unstyled" >
+                        <li><a href="/shop" class="color-white text-decoration-none">Home</a></li>
+                        <li><a href="/shop/about/" class="color-white text-decoration-none">About</a></li>
+                        <li><a href="/shop/contact/" class="color-white text-decoration-none">Contact</a></li>
+                        <li><a href="/shop/tracker/" class="color-white text-decoration-none">Track Order</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="mb-3">Customer Service</h6>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-muted text-decoration-none">Help Center</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Shipping Info</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Returns</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">FAQ</a></li>
+                        <li><a href="#" class="color-white text-decoration-none">Help Center</a></li>
+                        <li><a href="#" class="color-white text-decoration-none">Shipping Info</a></li>
+                        <li><a href="#" class="color-white text-decoration-none">Returns</a></li>
+                        <li><a href="#" class="color-white text-decoration-none">FAQ</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-4 mb-4">
                     <h6 class="mb-3">Newsletter</h6>
-                    <p class="text-muted mb-3">Subscribe to get updates on new products and exclusive offers!</p>
+                    <p class="color-white mb-3">Subscribe to get updates on new products and exclusive offers!</p>
                     <div class="input-group">
                         <input type="email" class="form-control" placeholder="Enter your email">
                         <button class="btn btn-primary" type="button">Subscribe</button>
