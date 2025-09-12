@@ -332,7 +332,9 @@
     .carousel-container {
         padding: 0 1rem;
     }
-    
+    .dark-mode .qty{
+        color: black !important;
+    }
     .carousel-control-prev,
     .carousel-control-next {
         width: 40px;
@@ -376,6 +378,10 @@
     color: white;
 }
 
+.dark-mode h2.section-title {
+    color: white !important;
+}
+
 .dark-mode .section-subtitle {
     color: #d1d5db;
 }
@@ -413,8 +419,8 @@
     <div class="container">
         {% for product, range, nSlides in allProds %}
         <div class="section-header">
-            <h2 class="section-title" style="color: #000000;">
-                
+            <h2 class="section-title">
+
                 Flash Sale on {{ product.0.category }}
             </h2>
             {% comment %} <p class="section-subtitle">Discover our handpicked selection of {{ product.0.category }} with exclusive discounts</p> {% endcomment %}
@@ -558,7 +564,7 @@ function setProductCardQuantity(idstr, quantity) {
                 <button id="minus${idstr}" class="btn btn-sm btn-outline-danger minus" type="button">
                     <i class="fas fa-minus"></i>
                 </button>
-                <span id="val${idstr}" class="fw-bold px-2">${quantity}</span>
+                <span id="val${idstr}" class="qty fw-bold px-2">${quantity}</span>
                 <button id="plus${idstr}" class="btn btn-sm btn-outline-success plus" type="button">
                     <i class="fas fa-plus"></i>
                 </button>

@@ -53,6 +53,10 @@
         --bg-primary: #111827;
         --bg-secondary: #1f2937;
         --border-color: #374151;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        --hover-bg: #374151;
+        --active-bg: #4b5563;
       }
 
       * {
@@ -226,6 +230,14 @@
         border-color: var(--border-color);
       }
 
+      .dark-mode .nav-link {
+        color: var(--text-primary) !important;
+      }
+
+      .dark-mode .nav-link:hover {
+        color: var(--primary-color) !important;
+      }
+
       .dark-mode .search-input {
         background: var(--bg-secondary);
         border-color: var(--border-color);
@@ -245,6 +257,313 @@
       .dark-mode .dark-mode-toggle:hover {
         background: var(--primary-color);
         color: white;
+      }
+
+      /* Dark Mode for Footer */
+      .dark-mode footer {
+        background: var(--bg-primary) !important;
+        color: var(--text-primary) !important;
+      }
+
+      .dark-mode footer .text-muted {
+        color: var(--text-secondary) !important;
+      }
+
+      .dark-mode footer a {
+        color: var(--text-secondary) !important;
+      }
+
+      .dark-mode footer a:hover {
+        color: var(--text-primary) !important;
+      }
+
+      /* Dark Mode for Bootstrap Components */
+      .dark-mode .table {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .table th,
+      .dark-mode .table td {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .table thead th {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .list-group-item {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .card {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .card-header {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .card-body {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .btn-secondary {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .btn-secondary:hover {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .form-control {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .form-control:focus {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .alert {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .text-muted {
+        color: var(--text-secondary) !important;
+      }
+
+      .dark-mode .text-dark {
+        color: var(--text-primary) !important;
+      }
+
+      .dark-mode .text-light {
+        color: var(--text-secondary) !important;
+      }
+
+      .dark-mode .bg-light {
+        background: var(--bg-secondary) !important;
+      }
+
+      .dark-mode .bg-white {
+        background: var(--bg-primary) !important;
+        color: var(--text-primary) !important;
+      }
+
+      .dark-mode .border {
+        border-color: var(--border-color) !important;
+      }
+
+      /* Additional Dark Mode Styles for Buttons and Inputs */
+      .dark-mode .btn-primary {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+      }
+
+      .dark-mode .btn-primary:hover {
+        background: var(--primary-dark);
+        border-color: var(--primary-dark);
+        color: white;
+      }
+
+      .dark-mode .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+        background: transparent;
+      }
+
+      .dark-mode .btn-outline-primary:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .dark-mode .btn-success {
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        color: white;
+      }
+
+      .dark-mode .btn-success:hover {
+        background: #059669;
+        border-color: #059669;
+        color: white;
+      }
+
+      .dark-mode .btn-danger {
+        background: #dc2626;
+        border-color: #dc2626;
+        color: white;
+      }
+
+      .dark-mode .btn-danger:hover {
+        background: #b91c1c;
+        border-color: #b91c1c;
+        color: white;
+      }
+
+      .dark-mode .btn-warning {
+        background: #f59e0b;
+        border-color: #f59e0b;
+        color: white;
+      }
+
+      .dark-mode .btn-warning:hover {
+        background: #d97706;
+        border-color: #d97706;
+        color: white;
+      }
+
+      .dark-mode .btn-info {
+        background: #06b6d4;
+        border-color: #06b6d4;
+        color: white;
+      }
+
+      .dark-mode .btn-info:hover {
+        background: #0891b2;
+        border-color: #0891b2;
+        color: white;
+      }
+
+      .dark-mode .dropdown-menu {
+        background: var(--bg-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .dropdown-item {
+        color: var(--text-primary);
+      }
+
+      .dark-mode .dropdown-item:hover {
+        background: var(--hover-bg);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .input-group-text {
+        background: var(--bg-secondary);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .form-select {
+        background: var(--bg-secondary);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .form-select:focus {
+        background: var(--bg-primary);
+        border-color: var(--primary-color);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .badge {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .dark-mode .progress-bar {
+        background: var(--primary-color);
+      }
+
+      .dark-mode .modal-content {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .modal-header {
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .modal-footer {
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .tooltip-inner {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .popover {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .breadcrumb {
+        background: transparent;
+      }
+
+      .dark-mode .breadcrumb-item a {
+        color: var(--text-secondary);
+      }
+
+      .dark-mode .breadcrumb-item.active {
+        color: var(--text-primary);
+      }
+
+      .dark-mode .pagination .page-link {
+        background: var(--bg-secondary);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .pagination .page-link:hover {
+        background: var(--hover-bg);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .pagination .page-item.active .page-link {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+      }
+
+      .dark-mode .nav-tabs .nav-link {
+        background: transparent;
+        border-color: var(--border-color);
+        color: var(--text-secondary);
+      }
+
+      .dark-mode .nav-tabs .nav-link.active {
+        background: var(--bg-primary);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .accordion-button {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .dark-mode .accordion-button:not(.collapsed) {
+        background: var(--hover-bg);
+        color: var(--text-primary);
+      }
+
+      .dark-mode .accordion-body {
+        background: var(--bg-primary);
+        color: var(--text-primary);
       }
 
       /* Responsive Design */
